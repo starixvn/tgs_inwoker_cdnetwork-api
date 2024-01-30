@@ -23,6 +23,7 @@ run:
   stage: run
   script:
     - cd getDomainId/basic/
+    - pwd
     - DomainID=$(go run Client.go 2>&1 | grep 'domainidresult' |awk '{print $2}')  # 提取并存储DomainID
     - echo $DomainID > ../../domainid.txt
     - cd
