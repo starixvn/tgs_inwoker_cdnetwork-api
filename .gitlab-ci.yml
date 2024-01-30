@@ -1,0 +1,9 @@
+stages:
+  - build
+
+my_manual_job:
+  stage: build
+  script:
+    - echo "这是一个手动触发的作业"
+  only:
+    - manual

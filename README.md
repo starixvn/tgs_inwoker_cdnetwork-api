@@ -1,0 +1,2 @@
+createDomain 之後 必須帶上control-group分配服務組後才能在後台看到
+禁用/啟用/刪除域名,需要拿到DomainId,不能直接用域名名稱
