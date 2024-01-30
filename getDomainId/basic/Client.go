@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"openApi-authentication/api/client"
 	"openApi-authentication/common/auth"
-	"os"
 )
 
 type DomainSummary struct {
