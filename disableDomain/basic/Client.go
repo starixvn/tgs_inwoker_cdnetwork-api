@@ -6,7 +6,7 @@ import (
 	"openApi-authentication/common/auth"
 	)
 func main() {
-	var domainidDomainID string
+	var DomainID string
 	disableSingleDomainServiceRequest := client.DisableSingleDomainServiceRequest{}
 	apiuri := fmt.Sprintf("/api/domain/%s/disable", DomainID)
 	config := auth.BasicConfig{UserName: "{raypro}", ApiKey: "{98514TVVFKeNJ6dfQ8Ho6xBn5OTvph}", EndPoint: "api.cdnetworks.com", Uri: apiuri, Method: "PUT"}
