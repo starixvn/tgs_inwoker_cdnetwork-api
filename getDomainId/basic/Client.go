@@ -58,12 +58,12 @@ func main() {
 		fmt.Println("解码JSON失败:", err)
 		return
 	}
-	targetDomainName := os.Getenv("CI_VARIABLE_NAME")
-	if gitlabVariable == "" {
-		fmt.Println("未找到环境变量 CI_VARIABLE_NAME")
-	} else {
-		fmt.Printf("GitLab CI/CD 变量的值是：%s\n", gitlabVariable)
-	}
+	targetDomainName := "autotest.rpgp.cc"
+	// if gitlabVariable == "" {
+	// 	fmt.Println("未找到环境变量 setdomainname")
+	// } else {
+	// 	fmt.Printf("GitLab CI/CD 变量的值是：%s\n", gitlabVariable)
+	// }
 	var DomainID int
 	// 遍历DomainSummaries并输出所需的键值对
 	for _, summary := range domainkv.DomainSummaries {
