@@ -42,3 +42,6 @@ disableDomain:
     - DomainID=$(cat domainid.txt)
     - cd disableDomain/basic/
     - go run Client.go $DomainID
+  only:
+    variables:
+      - $disable == "true"
