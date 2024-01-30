@@ -1,7 +1,7 @@
 stages:
   - build
   - run
-  - disableDomain
+  # - disableDomain
 variables:
   targetDomainName : autotest.rpgp.cc
 
