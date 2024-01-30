@@ -1,9 +1,19 @@
 stages:
   - build
+  - run
 
-my_manual_job:
+before_script:
+  - go version
+  - go env
+  - export GO111MODULE=on
+
+build:
   stage: build
   script:
-    - echo "这是一个手动触发的作业"
-  only:
-    - manual
+    - go mod tidy
+    - go build -v ./...
+
+run:
+  stage: run
+  script:
+    - go run getDomainId/basic/Client.go
