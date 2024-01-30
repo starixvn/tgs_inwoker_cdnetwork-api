@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"openApi-authentication/api/client"
 	"openApi-authentication/common/auth"
+	"os"
 	)
 func main() {
-	var DomainID string
+	DomainID := os.Args[1]
 	disableSingleDomainServiceRequest := client.DisableSingleDomainServiceRequest{}
 	fmt.Println("我是ID",DomainID)
 	apiuri := fmt.Sprintf("/api/domain/%s/disable", DomainID)
