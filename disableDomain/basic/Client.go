@@ -8,7 +8,7 @@ import (
 func main() {
 	var DomainID string
 	disableSingleDomainServiceRequest := client.DisableSingleDomainServiceRequest{}
-	fmt.Println("我是ID"DomainID)
+	fmt.Println("我是ID",DomainID)
 	apiuri := fmt.Sprintf("/api/domain/%s/disable", DomainID)
 	config := auth.BasicConfig{UserName: "{raypro}", ApiKey: "{98514TVVFKeNJ6dfQ8Ho6xBn5OTvph}", EndPoint: "api.cdnetworks.com", Uri: apiuri, Method: "PUT"}
 	response := auth.Invoke(config, disableSingleDomainServiceRequest.String())
