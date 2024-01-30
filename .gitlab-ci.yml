@@ -27,16 +27,18 @@ run:
     - go run Client.go #2>&1 | grep 'domainidresult' | awk '{print $1}'
     - DomainID=$(go run Client.go 2>&1 | grep domainidresult |awk '{print $2}')  # 提取并存储DomainID
     - echo $DomainID
-    - echo $DomainID > ../../domainid.txt
-    - pwd
-    - cd ../..
-    - pwd
-    - ls -l
-    - cat domainid.txt
+    - echo $DomainID > domainid.txt
+  artifacts:
+    paths:
+      - getDomainId/basic/domainid.txt
+    
 disableDomain:
   stage: disableDomain
   script:
     - pwd
+    - ls -l getDomainId/basic/domainid.txt  # 确保文件存在
+    - cp getDomainId/basic/domainid.txt .    # 将文件复制到当前工作目录
+    - ls -l domainid.txt                     # 确保文件被正确复制
     - DomainID=$(cat domainid.txt)
     - cd disableDomain/basic/
     - go run Client.go $DomainID
