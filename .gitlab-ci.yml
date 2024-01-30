@@ -6,6 +6,7 @@ before_script:
   - export PATH=$PATH:/usr/local/go/bin
   - go version
   - go env
+  - cd getDomainId/basic/
   - export GO111MODULE=on
 
 build:
@@ -17,4 +18,4 @@ build:
 run:
   stage: run
   script:
-    - go run getDomainId/basic/Client.go
+    - go run Client.go
