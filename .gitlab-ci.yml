@@ -1,6 +1,7 @@
 stages:
   - build
   - run
+  - disableDomain
 variables:
   targetDomainName : autotest.rpgp.cc
 
@@ -8,7 +9,6 @@ before_script:
   - export PATH=$PATH:/usr/local/go/bin
   - go version
   - go env
-  - cd getDomainId/basic/
   - export GO111MODULE=on
 
 build:
@@ -20,4 +20,15 @@ build:
 run:
   stage: run
   script:
-    - go run Client.go
+    - cd getDomainId/basic/
+    - go run Client.go > ../../domainid.txt 
+    - cat ../../domainid.txt 
+  # artifacts:
+  #   paths:
+  #     - readdomainid.txt
+
+# disableDomain:
+#   stage: disableDomain
+#   script:
+#     cd disableDomain/basic
+#     - go run 
