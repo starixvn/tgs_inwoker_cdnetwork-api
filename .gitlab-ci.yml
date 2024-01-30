@@ -1,6 +1,7 @@
 stages:
   - build
   - run
+  - disableDomain
   # - disableDomain
 variables:
   targetDomainName : autotest.rpgp.cc
@@ -23,13 +24,10 @@ run:
   script:
     - cd getDomainId/basic/
     - DomainID=$(go run Client.go 2>&1 | grep 'domainidresult' |awk '{print $2}')  # 提取并存储DomainID
-    - echo $DomainID
-  # artifacts:
-  #   paths:
-  #     - readdomainid.txt
-
-# disableDomain:
-#   stage: disableDomain
-#   script:
-#     cd disableDomain/basic
-#     - go run 
+    - echo $DomainID > ../../domainid.txt
+disableDomain:
+  stage: disableDomain
+  script:
+    - cd disableDomain/basic/
+    - DomainID=$(cat ../../domainid.txt)
+    - go run Client.go $DomainID
