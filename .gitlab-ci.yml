@@ -36,6 +36,7 @@ run:
 disableDomain:
   stage: disableDomain
   script:
+    - pwd
+    - DomainID=$(cat domainid.txt)
     - cd disableDomain/basic/
-    - DomainID=$(cat ../../domainid.txt)
     - go run Client.go $DomainID
