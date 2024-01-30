@@ -65,7 +65,7 @@ func main() {
 	for _, summary := range domainkv.DomainSummaries {
 		if summary.DomainName == targetDomainName {
 			DomainID = summary.DomainID
-			fmt.Println(DomainID)
+			fmt.Println("domainidresult",DomainID)
 			break
 		}
 	}
