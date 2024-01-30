@@ -12,7 +12,7 @@ func main() {
 	fmt.Println("我是ID",DomainID)
 	apiuri := fmt.Sprintf("/api/domain/%s/disable", DomainID)
 	fmt.Println(apiuri)
-	config := auth.BasicConfig{UserName: "{raypro}", ApiKey: "{98514TVVFKeNJ6dfQ8Ho6xBn5OTvph}", EndPoint: "api.cdnetworks.com", Uri: apiuri, Method: "PUT"}
+	config := auth.BasicConfig{UserName: "raypro", ApiKey: "98514TVVFKeNJ6dfQ8Ho6xBn5OTvph", EndPoint: "api.cdnetworks.com", Uri: apiuri, Method: "PUT"}
 	fmt.Printf(config.Uri)
 	response := auth.Invoke(config, disableSingleDomainServiceRequest.String())
 	fmt.Printf("response body is %#v\n", response)
