@@ -24,7 +24,7 @@ run:
   script:
     - cd getDomainId/basic/
     - pwd
-    - go run Client.go 2>&1 | grep 'domainidresult' | awk '{print $2}'
+    - go run Client.go 2>&1 | grep 'domainidresult' | awk '{print $1}'
     # - DomainID=$(go run Client.go 2>&1 | grep 'domainidresult' |awk '{print $1}')  # 提取并存储DomainID
     # - echo $DomainID
     # # - echo $DomainID > ../../domainid.txt
