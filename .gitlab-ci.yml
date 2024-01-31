@@ -64,18 +64,19 @@ enableDomain:
   only:
     variables:
       - $enable == "true"
-createDomain:
-  stage: createDomain
+# createDomain:
+#   stage: createDomain
+#   script:
+#     - cd createDomain/basic
+#     - go run Client.go
+#   only:
+#     variables:
+#       - $createdomainname
+controlGroup: #createDomain後需要修改group才會在後台顯示
+  stage: controlGroup
   script:
-    - cd createDomain/basic
+    - cd controlGroup/basic
     - go run Client.go
   only:
     variables:
-      - $createdomainname
-# controlGroup: #createDomain後需要修改group才會在後台顯示
-#   stage: controlGroup
-#   script:
-#     - cd controlGroup/basic
-#     - go run Client.go
-#   dependencies:
-#     - createDomain
+      - $createDomainname
