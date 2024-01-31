@@ -72,10 +72,10 @@ createDomain:
   only:
     variables:
       - $createdomainname
-controlGroup: #createDomain後需要修改group才會在後台顯示
-  stage: controlGroup
-  script:
-    - cd controlGroup/basic
-    - go run Client.go
-  dependencies:
-    - createDomain
+# controlGroup: #createDomain後需要修改group才會在後台顯示
+#   stage: controlGroup
+#   script:
+#     - cd controlGroup/basic
+#     - go run Client.go
+#   dependencies:
+#     - createDomain
