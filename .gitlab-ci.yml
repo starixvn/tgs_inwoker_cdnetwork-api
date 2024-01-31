@@ -70,7 +70,7 @@ createDomain:
     - cd createDomain/basic
     - go run Client.go
     - sleep 10
-    - cd controlGroup/basic
+    - cd ../../controlGroup/basic
     - go run Client.go
   only:
     variables:
