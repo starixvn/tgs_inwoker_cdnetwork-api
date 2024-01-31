@@ -4,6 +4,7 @@ import (
 "fmt"
 "openApi-authentication/common/auth"
 "openApi-authentication/api/client"
+"os"
 )
 
 func main() {
@@ -14,6 +15,6 @@ func main() {
 	fmt.Println(apiuri)
 	config := auth.BasicConfig{UserName: "raypro", ApiKey: "98514TVVFKeNJ6dfQ8Ho6xBn5OTvph", EndPoint: "api.cdnetworks.com", Uri: apiuri, Method: "PUT"}
 	fmt.Printf(config.Uri)
-	response := auth.Invoke(config, disableSingleDomainServiceRequest.String())
+	response := auth.Invoke(config, enableSingleDomainServiceRequest.String())
 	fmt.Printf("response body is %#v\n", response)
 }
