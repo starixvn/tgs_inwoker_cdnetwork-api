@@ -12,12 +12,11 @@ func main() {
 	editControlGroupRequest := client.EditControlGroupRequest{}
 	var subeditControlGroupRequest0 = os.Getenv("createdomainname")
 	editControlGroupRequest.SetDomainList([]*string{&subeditControlGroupRequest0})
-	loginNameList := []*LoginName{}
-	var i = 0
+	loginNameList := []*client.LoginName{}
 	loginName1 := client.LoginName{}
 	loginName1.SetLoginName("raypro")
-	loginNameList[i] = &loginName1
-	i++
+	loginNameList = append(loginNameList, &loginName1)
+
 	editControlGroupRequest.SetAccountList(loginNameList)
 	editControlGroupRequest.SetIsAdd(true)
 	editControlGroupRequest.SetControlGroupName("Raypro")
