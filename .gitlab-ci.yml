@@ -20,7 +20,9 @@ build:
     - cd getDomainId/basic/
     - go mod tidy
     - go build -v ./...
-
+  only:
+    variables:
+      - $setdomainname
 run:
   stage: run
   script:
@@ -33,6 +35,7 @@ run:
   artifacts:
     paths:
       - getDomainId/basic/domainid.txt
+  
     
 disableDomain:
   stage: disableDomain
