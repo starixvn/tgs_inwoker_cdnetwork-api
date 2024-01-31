@@ -19,6 +19,7 @@ func main() {
         originConfig.SetOriginIps(OriginSet1)
         addCdnDomainRequest.SetOriginConfig(originConfig)
         addCdnDomainRequest.SetVersion("1.0.0")
+        addCdnDomainRequest.SetAccelerateNoChina("true")
         
     config := auth.BasicConfig{UserName: "raypro", ApiKey: "98514TVVFKeNJ6dfQ8Ho6xBn5OTvph", EndPoint: "api.cdnetworks.com", Uri: "/cdnw/api/domain", Method: "POST"}
     response := auth.Invoke(config, addCdnDomainRequest.String())
