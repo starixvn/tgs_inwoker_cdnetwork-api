@@ -9,7 +9,7 @@ import (
 func main() {
 
 	editControlGroupRequest := client.EditControlGroupRequest{}
-	var subeditControlGroupRequest0 = " "
+	var subeditControlGroupRequest0 = os.Getenv("createdomainname")
 	editControlGroupRequest.SetDomainList([]*string{&subeditControlGroupRequest0})
 	loginNameList := []*LoginName{}
 	var i = 0
@@ -21,7 +21,7 @@ func main() {
 	editControlGroupRequest.SetIsAdd(true)
 	editControlGroupRequest.SetControlGroupName("Raypro")
 
-	config := auth.BasicConfig{UserName: "{raypro}", ApiKey: "{98514TVVFKeNJ6dfQ8Ho6xBn5OTvph}", EndPoint: "api.cdnetworks.com", Uri: "/user/control-groups/fdb99358-9e43-4197-95c7-7c2213a71a6f", Method: "PUT"}
+	config := auth.BasicConfig{UserName: "raypro", ApiKey: "98514TVVFKeNJ6dfQ8Ho6xBn5OTvph", EndPoint: "api.cdnetworks.com", Uri: "/user/control-groups/fdb99358-9e43-4197-95c7-7c2213a71a6f", Method: "PUT"}
 	response := auth.Invoke(config, editControlGroupRequest.String())
 	fmt.Printf("response body is %#v\n", response)
 }
