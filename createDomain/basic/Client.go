@@ -11,7 +11,7 @@ func main() {
     createDomainName1 := os.Getenv("createdomainname")
     OriginSet1 := os.Getenv("originset")
     addCdnDomainRequest := client.AddCdnDomainRequest{}
-        addCdnDomainRequest.SetDomainName(createDomainName)
+        addCdnDomainRequest.SetDomainName(createDomainName1)
         addCdnDomainRequest.SetContractId("40016213")
         addCdnDomainRequest.SetItemId("30")
         originConfig := client.AddCdnDomainRequestOriginConfig{}
