@@ -2,7 +2,7 @@ stages:
   - build
   - run
   - disableDomain
-  # - disableDomain
+  - enableDomain
 variables:
   targetDomainName : autotest.rpgp.cc
 
@@ -45,3 +45,17 @@ disableDomain:
   only:
     variables:
       - $disable == "true"
+
+enableDomain:
+  stage: enableDomain
+  script:
+    - pwd
+    - ls -l getDomainId/basic/domainid.txt  # 确保文件存在
+    - cp getDomainId/basic/domainid.txt .    # 将文件复制到当前工作目录
+    - ls -l domainid.txt                     # 确保文件被正确复制
+    - DomainID=$(cat domainid.txt)
+    - cd enableDomain/basic/
+    - go run Client.go $DomainID
+  only:
+    variables:
+      - $enable == "true"
