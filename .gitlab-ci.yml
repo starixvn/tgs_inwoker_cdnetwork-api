@@ -3,8 +3,9 @@ stages:
   - run
   - disableDomain
   - enableDomain
+  - createDomain
 variables:
-  targetDomainName : autotest.rpgp.cc
+  createdomainname:
 
 before_script:
   - export PATH=$PATH:/usr/local/go/bin
@@ -41,7 +42,7 @@ disableDomain:
     - ls -l domainid.txt                     # 确保文件被正确复制
     - DomainID=$(cat domainid.txt)
     - cd disableDomain/basic/
-    - go run Client.go $DomainID
+    - go run Client.go
   only:
     variables:
       - $disable == "true"
@@ -55,7 +56,22 @@ enableDomain:
     - ls -l domainid.txt                     # 确保文件被正确复制
     - DomainID=$(cat domainid.txt)
     - cd enableDomain/basic/
-    - go run Client.go $DomainID
+    - go run Client.go
   only:
     variables:
       - $enable == "true"
+createDomain:
+  stage: createDomain
+  script:
+    - cd createDomain/basic
+    - go run Client.go
+  only:
+    variables:
+      - createdomainname
+controlGroup: #createDomain後需要修改group才會在後台顯示
+  stage: createDomain
+  script:
+    - cd controlGroup/basic
+    - go run Client.go
+  dependencies:
+    - createDomain
