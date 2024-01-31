@@ -69,14 +69,17 @@ createDomain:
   script:
     - cd createDomain/basic
     - go run Client.go
-  only:
-    variables:
-      - $createdomainname
-controlGroup: #createDomain後需要修改group才會在後台顯示
-  stage: controlGroup
-  script:
+    - sleep 10
     - cd controlGroup/basic
     - go run Client.go
   only:
     variables:
-      - $createDomainname
+      - $createdomainname
+# controlGroup: #createDomain後需要修改group才會在後台顯示
+#   stage: controlGroup
+#   script:
+#     - cd controlGroup/basic
+#     - go run Client.go
+#   only:
+#     variables:
+#       - $createDomainname
