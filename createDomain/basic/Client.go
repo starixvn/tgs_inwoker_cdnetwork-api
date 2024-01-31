@@ -14,7 +14,7 @@ func main() {
         addCdnDomainRequest.SetDomainName(createDomainName1)
         addCdnDomainRequest.SetContractId("40016213")
         addCdnDomainRequest.SetItemId("30")
-        originConfig := client.AddCdnDomainRequestOriginConfig{}
+        originConfig := &client.AddCdnDomainRequestOriginConfig{}
         originConfig.SetOriginIps(OriginSet1)
         addCdnDomainRequest.SetOriginConfig(originConfig)
         addCdnDomainRequest.SetVersion("1.0.0")
