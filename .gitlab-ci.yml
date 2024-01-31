@@ -4,6 +4,7 @@ stages:
   - disableDomain
   - enableDomain
   - createDomain
+  - controlGroup
 variables:
   createdomainname:
 
@@ -69,7 +70,7 @@ createDomain:
     variables:
       - createdomainname
 controlGroup: #createDomain後需要修改group才會在後台顯示
-  stage: createDomain
+  stage: controlGroup
   script:
     - cd controlGroup/basic
     - go run Client.go
