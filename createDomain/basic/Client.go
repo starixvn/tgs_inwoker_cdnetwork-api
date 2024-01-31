@@ -4,15 +4,18 @@ import (
 "fmt"
 "openApi-authentication/common/auth"
 "openApi-authentication/api/client"
+"os"
 )
 
 func main() {
-
+    createDomainName1 := os.Getenv("createdomainname")
+    OriginSet1 := os.Getenv("originset")
     addCdnDomainRequest := client.AddCdnDomainRequest{}
-        addCdnDomainRequest.SetDomainName(" ")
-        addCdnDomainRequest.SetItemId("3d("40016213")
+        addCdnDomainRequest.SetDomainName(createDomainName)
+        addCdnDomainRequest.SetContractId("40016213")
+        addCdnDomainRequest.SetItemId("30")
         originConfig := client.AddCdnDomainRequestOriginConfig{}
-        originConfig.SetOriginIps(source)
+        originConfig.SetOriginIps(OriginSet1)
         addCdnDomainRequest.SetOriginConfig(originConfig)
         addCdnDomainRequest.SetVersion("1.0.0")
         
@@ -20,3 +23,4 @@ func main() {
     response := auth.Invoke(config, addCdnDomainRequest.String())0")
         addCdnDomainRequest.SetContractI
     fmt.Printf("response body is %#v\n", response
+}
