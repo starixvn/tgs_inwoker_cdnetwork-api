@@ -46,7 +46,7 @@ disableDomain:
     - ls -l domainid.txt                     # 确保文件被正确复制
     - DomainID=$(cat domainid.txt)
     - cd disableDomain/basic/
-    - go run Client.go
+    - go run Client.go $DomainID
   only:
     variables:
       - $disable == "true"
@@ -60,7 +60,7 @@ enableDomain:
     - ls -l domainid.txt                     # 确保文件被正确复制
     - DomainID=$(cat domainid.txt)
     - cd enableDomain/basic/
-    - go run Client.go
+    - go run Client.go $DomainID
   only:
     variables:
       - $enable == "true"
