@@ -20,7 +20,8 @@ func main() {
         addCdnDomainRequest.SetVersion("1.0.0")
         
     config := auth.BasicConfig{UserName: "{raypro}", ApiKey: "{98514TVVFKeNJ6dfQ8Ho6xBn5OTvph}", EndPoint: "api.cdnetworks.com", Uri: "/cdnw/api/domain", Method: "POST"}
-    response := auth.Invoke(config, addCdnDomainRequest.String())0")
-        addCdnDomainRequest.SetContractI
-    fmt.Printf("response body is %#v\n", response
+    response := auth.Invoke(config, addCdnDomainRequest.String())
+    fmt.Printf("response body is %#v\n", response)
+    
+    
 }
