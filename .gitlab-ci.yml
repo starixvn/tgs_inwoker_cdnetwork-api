@@ -77,5 +77,5 @@ controlGroup: #createDomain後需要修改group才會在後台顯示
   script:
     - cd controlGroup/basic
     - go run Client.go
-  dependencies:
-    - createDomain
+  only:
+    - $createdomainname
