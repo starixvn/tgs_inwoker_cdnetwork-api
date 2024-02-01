@@ -5,6 +5,7 @@ import (
 "openApi-authentication/common/auth"
 "openApi-authentication/api/client"
 "os"
+"strings"
 )
 
 func main() {
