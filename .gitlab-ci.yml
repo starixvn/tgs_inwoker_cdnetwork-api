@@ -17,7 +17,6 @@ before_script:
 build:
   stage: build
   script:
-    - cd getDomainId/basic/
     - go mod tidy
     - go build -v ./...
   
@@ -26,7 +25,7 @@ run:
   script:
     - cd getDomainId/basic/
     - pwd
-    - go run Client.go #2>&1 | grep 'domainidresult' | awk '{print $1}'
+    - go run Client.go 
     - DomainID=$(go run Client.go 2>&1 | grep domainidresult |awk '{print $2}')  # 提取并存储DomainID
     - echo $DomainID
     - echo $DomainID > domainid.txt
@@ -41,9 +40,9 @@ disableDomain:
   stage: disableDomain
   script:
     - pwd
-    - ls -l getDomainId/basic/domainid.txt  # 确保文件存在
-    - cp getDomainId/basic/domainid.txt .    # 将文件复制到当前工作目录
-    - ls -l domainid.txt                     # 确保文件被正确复制
+    - ls -l getDomainId/basic/domainid.txt
+    - cp getDomainId/basic/domainid.txt .
+    - ls -l domainid.txt
     - DomainID=$(cat domainid.txt)
     - cd disableDomain/basic/
     - go run Client.go $DomainID
@@ -55,9 +54,9 @@ enableDomain:
   stage: enableDomain
   script:
     - pwd
-    - ls -l getDomainId/basic/domainid.txt  # 确保文件存在
-    - cp getDomainId/basic/domainid.txt .    # 将文件复制到当前工作目录
-    - ls -l domainid.txt                     # 确保文件被正确复制
+    - ls -l getDomainId/basic/domainid.txt
+    - cp getDomainId/basic/domainid.txt .
+    - ls -l domainid.txt
     - DomainID=$(cat domainid.txt)
     - cd enableDomain/basic/
     - go run Client.go $DomainID
@@ -75,11 +74,11 @@ createDomain:
   only:
     variables:
       - $createdomainname
-# controlGroup: #createDomain後需要修改group才會在後台顯示
-#   stage: controlGroup
-#   script:
-#     - cd controlGroup/basic
-#     - go run Client.go
-#   only:
-#     variables:
-#       - $createDomainname
+controlGroup: #createDomain後需要修改group才會在後台顯示
+  stage: controlGroup
+  script:
+    - cd controlGroup/basic
+    - go run Client.go
+  only:
+    variables:
+      - $createDomainname
