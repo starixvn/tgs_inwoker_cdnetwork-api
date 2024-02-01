@@ -8,8 +8,11 @@ import (
 )
 
 func main() {
-    createDomainName1 := os.Getenv("createdomainname")
+    createDomainNames := os.Getenv("createdomainname")
     OriginSet1 := os.Getenv("originset")
+    domainNames := strings.Split(createDomainNames, ",")
+
+    for _, createDomainName1 := range domainNames {
     addCdnDomainRequest := &client.AddCdnDomainRequest{}
         addCdnDomainRequest.SetDomainName(createDomainName1)
         fmt.Println(createDomainName1)
@@ -24,6 +27,6 @@ func main() {
     config := auth.BasicConfig{UserName: "raypro", ApiKey: "98514TVVFKeNJ6dfQ8Ho6xBn5OTvph", EndPoint: "api.cdnetworks.com", Uri: "/cdnw/api/domain", Method: "POST"}
     response := auth.Invoke(config, addCdnDomainRequest.String())
     fmt.Printf("response body is %#v\n", response)
-    
+    }
     
 }
