@@ -10,16 +10,18 @@ import (
 
 func main() {
 
-	editControlGroupRequest := client.EditControlGroupRequest{}
+	
 	createDomainNames := os.Getenv("createdomainname")
 	domainNames := strings.Split(createDomainNames, ",")
 	editControlGroupRequest.SetDomainList([]*string{&domainNames})
-	for _, createDomainName := range domainNames {
 	loginNameList := []*client.LoginName{}
 	loginName1 := client.LoginName{}
 	loginName1.SetLoginName("raypro")
 	loginNameList = append(loginNameList, &loginName1)
-
+	for _, createDomainName := range domainNames {
+	
+    editControlGroupRequest := client.EditControlGroupRequest{}
+	editControlGroupRequest.SetDomainList([]*string{&createDomainName})
 	editControlGroupRequest.SetAccountList(loginNameList)
 	editControlGroupRequest.SetIsAdd(true)
 	editControlGroupRequest.SetControlGroupName("Raypro")
