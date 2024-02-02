@@ -90,8 +90,8 @@ createDomain:
     variables:
       - $createdomainname
 
-createDomain:
-  stage: createDomain
+getCertID:
+  stage: getCertID
   script:
     - cd getCertificateList/basic
     - go run Client.go
