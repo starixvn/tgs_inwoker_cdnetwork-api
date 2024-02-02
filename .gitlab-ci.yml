@@ -1,6 +1,6 @@
 stages:
   - build
-  - run
+  - getDomainId
   - disableDomain
   - enableDomain
   - deleteDomain
@@ -22,13 +22,13 @@ build:
     - go mod tidy
     - go build -v ./...
   
-run:
-  stage: run
+getDomainId:
+  stage: getDomainId
   script:
     - cd getDomainId/basic/
     - pwd
     - go run Client.go 
-    - DomainID=$(go run Client.go 2>&1 | grep domainidresult |awk '{print $2}')  # 提取并存储DomainID
+    - DomainID=$(go run Client.go 2>&1 | grep domainidresult |awk '{print $2}')  # 提取并設定DomainID變數給disable/enable/delete階段使用
     - echo $DomainID
     - echo $DomainID > domainid.txt
   artifacts:
@@ -83,7 +83,7 @@ createDomain:
   script:
     - cd createDomain/basic
     - go run Client.go
-    - sleep 10
+    - sleep 15  #等api成功創建域名才能分組
     - cd ../../controlGroup/basic  #createDomain後需要修改group才會在後台顯示
     - go run Client.go
   only:
