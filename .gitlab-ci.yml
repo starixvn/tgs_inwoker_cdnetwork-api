@@ -5,7 +5,7 @@ stages:
   - enableDomain
   - deleteDomain
   - createDomain
-  
+  - getCertID
 variables:
   createdomainname:
 
@@ -89,3 +89,13 @@ createDomain:
   only:
     variables:
       - $createdomainname
+
+createDomain:
+  stage: createDomain
+  script:
+    - cd getCertificateList/basic
+    - go run Client.go
+   
+  only:
+    variables:
+      - $certname
