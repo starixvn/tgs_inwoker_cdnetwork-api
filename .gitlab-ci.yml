@@ -3,8 +3,9 @@ stages:
   - run
   - disableDomain
   - enableDomain
+  - deleteDomain
   - createDomain
-  - controlGroup
+  
 variables:
   createdomainname:
 
@@ -64,22 +65,27 @@ enableDomain:
   only:
     variables:
       - $enable == "true"
+deleteDomain:
+  stage: deleteDomain
+  script:
+    - pwd
+    - ls -l getDomainId/basic/domainid.txt
+    - cp getDomainId/basic/domainid.txt .
+    - ls -l domainid.txt
+    - DomainID=$(cat domainid.txt)
+    - cd enableDomain/basic/
+    - go run Client.go $DomainID
+  only:
+    variables:
+      - $delete == "true"
 createDomain:
   stage: createDomain
   script:
     - cd createDomain/basic
     - go run Client.go
     - sleep 10
-    - cd ../../controlGroup/basic
+    - cd ../../controlGroup/basic  #createDomain後需要修改group才會在後台顯示
     - go run Client.go
   only:
     variables:
       - $createdomainname
-# controlGroup: #createDomain後需要修改group才會在後台顯示
-#   stage: controlGroup
-#   script:
-#     - cd controlGroup/basic
-#     - go run Client.go
-#   only:
-#     variables:
-#       - $createDomainname
