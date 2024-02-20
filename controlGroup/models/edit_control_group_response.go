@@ -1,6 +1,4 @@
-package main
-
-import "github.com/alibabacloud-go/tea/tea"
+package models
 
 type EditControlGroupResponse struct {
 	// {"en":"Status Code", "zh_CN":"错误具体状态码"}
@@ -11,14 +9,6 @@ type EditControlGroupResponse struct {
 	Success *bool `json:"success,omitempty" xml:"success,omitempty" require:"true"`
 	// {"en":"Control Group Name", "zh_CN":"Control Group名称"}
 	ControlGroupName *string `json:"controlGroupName,omitempty" xml:"controlGroupName,omitempty" require:"true"`
-}
-
-func (s EditControlGroupResponse) String() string {
-	return tea.Prettify(s)
-}
-
-func (s EditControlGroupResponse) GoString() string {
-	return s.String()
 }
 
 func (s *EditControlGroupResponse) SetCode(v int) *EditControlGroupResponse {

@@ -1,4 +1,4 @@
-package main
+package models
 
 import "github.com/alibabacloud-go/tea/tea"
 
@@ -19,10 +19,6 @@ type EditControlGroupRequest struct {
 
 func (s EditControlGroupRequest) String() string {
 	return tea.Prettify(s)
-}
-
-func (s EditControlGroupRequest) GoString() string {
-	return s.String()
 }
 
 func (s *EditControlGroupRequest) SetControlGroupName(v string) *EditControlGroupRequest {
