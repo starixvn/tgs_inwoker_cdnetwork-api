@@ -51,14 +51,16 @@ func GetDomainId(domainName string) int {
 		fmt.Println("转换为 JSON 失败:", err)
 		return -1
 	}
+
 	var domainkv Domainkv
+
 	err = json.Unmarshal([]byte(jsonData), &domainkv)
 	if err != nil {
 		fmt.Println("解码JSON失败:", err)
 		return -1
 	}
 
-	prettyJSON, err := json.MarshalIndent(data, "", "  ")
+	prettyJSON, err := json.MarshalIndent(jsonData, "", "  ")
 	if err != nil {
 		fmt.Println("Error formatting JSON:", err)
 		return -1
