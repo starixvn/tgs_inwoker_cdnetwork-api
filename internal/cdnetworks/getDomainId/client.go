@@ -52,6 +52,8 @@ func GetDomainId(domainName string) int {
 		return -1
 	}
 
+	// 打印 JSON 数据
+	fmt.Println(string(jsonData))
 	var domainkv Domainkv
 
 	err = json.Unmarshal([]byte(jsonData), &domainkv)
@@ -59,15 +61,6 @@ func GetDomainId(domainName string) int {
 		fmt.Println("解码JSON失败:", err)
 		return -1
 	}
-
-	prettyJSON, err := json.MarshalIndent(jsonData, "", "  ")
-	if err != nil {
-		fmt.Println("Error formatting JSON:", err)
-		return -1
-	}
-	// 打印 JSON 数据
-	fmt.Println(string(prettyJSON))
-
 	fmt.Println("Target Domain Name:", domainName)
 	var DomainID int
 	// 遍历DomainSummaries并输出所需的键值对
