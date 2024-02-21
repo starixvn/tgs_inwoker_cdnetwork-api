@@ -123,7 +123,7 @@ func getEditGroupCommand() *cobra.Command {
 func getDomainIdCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "getdomainid <domains>",
-		Short: "Update a group of domains",
+		Short: "Get domain's id",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Printf("get domain id: %s\n", args[0])
