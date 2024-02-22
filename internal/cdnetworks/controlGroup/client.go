@@ -44,7 +44,6 @@ func (c *ControlGroupManager) updateControlGroup(domain string) {
 	fmt.Printf("Response body for domain %s is %#v\n", domain, response)
 }
 
-// CreateDomains is responsible for creating domains
 func UpdateControlGroup(domainName string) {
 	// 使用逗号分割多个域名
 	domainNames := strings.Split(domainName, ",")

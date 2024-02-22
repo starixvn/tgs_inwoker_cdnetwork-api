@@ -12,6 +12,8 @@ import (
 	"net/http"
 	"time"
 
+	log "cdnetwork/pkg/log"
+
 	"github.com/spf13/viper"
 )
 
@@ -84,14 +86,14 @@ func loadConfig() config.CdnConfig {
 	err := viper.ReadInConfig()
 	if err != nil {
 		fmt.Println("Error reading config file:", err)
-		panic(fmt.Sprintf("Error reading config file:", err))
+		log.LogFatal(fmt.Sprintf("Error reading config file:", err))
 	}
 
 	var config config.CdnConfig
 	err = viper.Unmarshal(&config)
 	if err != nil {
 		fmt.Println("Error unmarshalling config:", err)
-		panic(fmt.Sprintf("Error unmarshalling config:", err))
+		log.LogFatal(fmt.Sprintf("Error unmarshalling config:", err))
 	}
 	return config
 }

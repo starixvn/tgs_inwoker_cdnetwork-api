@@ -1,8 +1,8 @@
 package util
 
 import (
+	"cdnetwork/pkg/log"
 	"cdnetwork/pkg/model"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -14,6 +14,7 @@ func Call(requestMsg model.HttpRequestMsg) string {
 	req, err := http.NewRequest(requestMsg.Method, requestMsg.Url, strings.NewReader(requestMsg.Body))
 	if err != nil {
 		// handle error
+		log.LogError(err.Error())
 	}
 	for key := range requestMsg.Headers {
 		req.Header.Set(key, requestMsg.Headers[key])
@@ -22,14 +23,15 @@ func Call(requestMsg model.HttpRequestMsg) string {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-
+			log.LogError(err.Error())
 		}
 	}(resp.Body)
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		// handle error
+		log.LogError(err.Error())
 	}
 	// 打印响应信息
-	fmt.Println(resp)
+	log.LogInfo(string(body))
 	return string(body)
 }
