@@ -61,7 +61,7 @@ func GetDomainId(domainName string) int {
 	}
 
 	// 打印 JSON 数据
-	log.LogInfo(fmt.Sprintf(string(prettyJSON)))
+	log.LogInfo(string(prettyJSON))
 
 	var domainkv Domainkv
 
@@ -75,7 +75,6 @@ func GetDomainId(domainName string) int {
 	for _, summary := range domainkv.DomainSummaries {
 		if summary.DomainName == domainName {
 			DomainID = summary.DomainID
-			fmt.Println("domain id:", DomainID)
 			return DomainID
 			break
 		}

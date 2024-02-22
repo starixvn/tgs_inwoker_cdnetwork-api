@@ -131,7 +131,7 @@ func getDomainIdCommand() *cobra.Command {
 				DomainName: args[0],
 			}
 			res := cdnCommand.GetDomainId()
-			fmt.Printf("get domain id: %s\n", res)
+			fmt.Printf("get domain id: %s", res)
 		},
 	}
 	return cmd
