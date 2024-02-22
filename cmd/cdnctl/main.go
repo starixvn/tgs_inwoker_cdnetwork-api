@@ -2,6 +2,7 @@ package main
 
 import (
 	"cdnetwork/internal/cli"
+	"cdnetwork/pkg/log"
 	"fmt"
 	"os"
 
@@ -78,7 +79,7 @@ func getDisableCommand() *cobra.Command {
 		Short: "Disable an existing domain",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("Disabling domain: %s\n", args[0])
+			log.LogInfo(fmt.Sprintf("Disabling domain: %s\n", args[0]))
 			cdnCommand := &cli.CdnCommand{
 				DomainName: args[0],
 			}
@@ -94,7 +95,7 @@ func getEnableDomainCommand() *cobra.Command {
 		Short: "Disable an existing domain",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("Disabling domain: %s\n", args[0])
+			log.LogInfo(fmt.Sprintf("Enabling domain: %s\n", args[0]))
 			cdnCommand := &cli.CdnCommand{
 				DomainName: args[0],
 			}
@@ -110,7 +111,7 @@ func getEditGroupCommand() *cobra.Command {
 		Short: "Update a group of domains",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("Updating domains: %s\n", args[0])
+			log.LogInfo(fmt.Sprintf("Edit domain's group: %s\n", args[0]))
 			cdnCommand := &cli.CdnCommand{
 				DomainName: args[0],
 			}
@@ -126,11 +127,11 @@ func getDomainIdCommand() *cobra.Command {
 		Short: "Get domain's id",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("get domain id: %s\n", args[0])
 			cdnCommand := &cli.CdnCommand{
 				DomainName: args[0],
 			}
-			cdnCommand.GetDomainId()
+			res := cdnCommand.GetDomainId()
+			fmt.Printf("get domain id: %s\n", res)
 		},
 	}
 	return cmd
@@ -141,11 +142,11 @@ func getCertificateCommand() *cobra.Command {
 		Short: "Get certificate of domains",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("get domain id: %s\n", args[0])
 			cdnCommand := &cli.CdnCommand{
 				DomainName: args[0],
 			}
-			cdnCommand.GetCertificate()
+			cert := cdnCommand.GetCertificate()
+			fmt.Printf("Cert is %s", cert)
 		},
 	}
 	return cmd

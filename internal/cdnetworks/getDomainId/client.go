@@ -3,6 +3,7 @@ package getDomainId
 import (
 	"cdnetwork/internal/cdnetworks/getDomainId/models"
 	"cdnetwork/pkg/auth"
+	"cdnetwork/pkg/log"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
@@ -41,33 +42,40 @@ func GetDomainId(domainName string) int {
 	var domainList DomainList
 	err := xml.Unmarshal([]byte(xmlData), &domainList)
 	if err != nil {
-		fmt.Println("解析 XML 失败:", err)
+		log.LogFatal(fmt.Sprintf("解析 XML 失败: %s", err))
 		return -1
 	}
 
 	// 将结构体转换为 JSON
 	jsonData, err := json.Marshal(domainList)
 	if err != nil {
-		fmt.Println("转换为 JSON 失败:", err)
+		log.LogFatal(fmt.Sprintf("解析 JSON 失败: %s", err))
+		return -1
+	}
+
+	// Convert the parsed data to pretty formatted JSON
+	prettyJSON, err := json.MarshalIndent(jsonData, "", "    ")
+	if err != nil {
+		log.LogFatal(fmt.Sprintf("Error formatting JSON: %s", err))
 		return -1
 	}
 
 	// 打印 JSON 数据
-	fmt.Println(string(jsonData))
+	log.LogInfo(fmt.Sprintf(string(prettyJSON)))
+
 	var domainkv Domainkv
 
 	err = json.Unmarshal([]byte(jsonData), &domainkv)
 	if err != nil {
-		fmt.Println("解码JSON失败:", err)
+		log.LogFatal(fmt.Sprintf("解析 JSON 失败: %s", err))
 		return -1
 	}
-	fmt.Println("Target Domain Name:", domainName)
 	var DomainID int
 	// 遍历DomainSummaries并输出所需的键值对
 	for _, summary := range domainkv.DomainSummaries {
 		if summary.DomainName == domainName {
 			DomainID = summary.DomainID
-			fmt.Println("domainidr:", DomainID)
+			fmt.Println("domain id:", DomainID)
 			return DomainID
 			break
 		}
