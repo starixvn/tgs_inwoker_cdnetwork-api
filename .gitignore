@@ -1,3 +1,4 @@
 /*.exe
 /cmd/cdnctl/cdnctl.exe
 /client.exe
+/internal/cdnetworks/createCertificate/createCertificate.exe

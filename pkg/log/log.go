@@ -19,7 +19,6 @@ func init() {
 	}
 
 	log.SetOutput(file)
-	log.Info("Start the log")
 }
 
 func LogInfo(msg string) {
