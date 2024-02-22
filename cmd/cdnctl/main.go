@@ -131,7 +131,7 @@ func getDomainIdCommand() *cobra.Command {
 				DomainName: args[0],
 			}
 			res := cdnCommand.GetDomainId()
-			fmt.Printf("get domain id: %s", res)
+			fmt.Printf("Domain id: %d\n", res)
 		},
 	}
 	return cmd
@@ -146,7 +146,7 @@ func getCertificateCommand() *cobra.Command {
 				DomainName: args[0],
 			}
 			cert := cdnCommand.GetCertificate()
-			fmt.Printf("Cert is %s", cert)
+			fmt.Printf("Cert is %s\n", cert)
 		},
 	}
 	return cmd

@@ -53,15 +53,8 @@ func GetDomainId(domainName string) int {
 		return -1
 	}
 
-	// Convert the parsed data to pretty formatted JSON
-	prettyJSON, err := json.MarshalIndent(jsonData, "", "    ")
-	if err != nil {
-		log.LogFatal(fmt.Sprintf("Error formatting JSON: %s", err))
-		return -1
-	}
-
 	// 打印 JSON 数据
-	log.LogInfo(string(prettyJSON))
+	log.LogInfo(string(jsonData))
 
 	var domainkv Domainkv
 
