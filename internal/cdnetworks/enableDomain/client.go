@@ -3,19 +3,21 @@ package enableDomain
 import (
 	"cdnetwork/internal/cdnetworks/enableDomain/models"
 	"cdnetwork/pkg/auth"
+	"cdnetwork/pkg/log"
 	"fmt"
 )
 
 func EnableDomain(domainId string) {
 	request := models.EnableSingleDomainServiceRequest{}
-	fmt.Println("我是ID", domainId)
+	log.LogInfo(fmt.Sprintf("domain id: %s", domainId))
+
 	apiuri := fmt.Sprintf("/api/domain/%s/enable", domainId)
 	fmt.Println(apiuri)
 	config := auth.BasicConfig{
 		Uri:    apiuri,
 		Method: "PUT",
 	}
-	fmt.Printf(config.Uri)
+	log.LogInfo(fmt.Sprintf(config.Uri))
 	response := auth.Invoke(config, request.String())
-	fmt.Printf("response body is %#v\n", response)
+	log.LogInfo(fmt.Sprintf("response body is %#v\n", response))
 }

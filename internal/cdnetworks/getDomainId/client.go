@@ -67,7 +67,7 @@ func GetDomainId(domainName string) int {
 	for _, summary := range domainkv.DomainSummaries {
 		if summary.DomainName == domainName {
 			DomainID = summary.DomainID
-			fmt.Println("domainidresult", DomainID)
+			fmt.Println("domainidr:", DomainID)
 			return DomainID
 			break
 		}

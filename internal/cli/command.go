@@ -47,10 +47,14 @@ func (c *CdnCommand) EnableDomain() {
 	enableDomain.EnableDomain(c.DomainId)
 }
 
-func (c *CdnCommand) GetCertificate() {
-	getCertificate.GetCertificate(c.DomainName)
+func (c *CdnCommand) GetCertificate() string {
+	res, err := getCertificate.GetCertificate(c.DomainName)
+	if err != nil {
+		return err.Error()
+	}
+	return res
 }
 
-func (c *CdnCommand) GetDomainId() {
-	getDomainId.GetDomainId(c.DomainName)
+func (c *CdnCommand) GetDomainId() int {
+	return getDomainId.GetDomainId(c.DomainName)
 }
