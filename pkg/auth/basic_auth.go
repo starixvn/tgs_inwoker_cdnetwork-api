@@ -1,20 +1,14 @@
 package auth
 
 import (
-	"cdnetwork/config"
 	"cdnetwork/pkg/constant"
 	"cdnetwork/pkg/model"
 	"cdnetwork/pkg/util"
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/base64"
-	"fmt"
 	"net/http"
 	"time"
-
-	log "cdnetwork/pkg/log"
-
-	"github.com/spf13/viper"
 )
 
 type BasicConfig struct {
@@ -22,7 +16,7 @@ type BasicConfig struct {
 	Method string
 }
 
-func TransferRequestMsg(parameter BasicConfig, config config.CdnConfig) model.HttpRequestMsg {
+func TransferRequestMsg(parameter BasicConfig, config util.CdnConfig) model.HttpRequestMsg {
 
 	var requestMsg = model.HttpRequestMsg{Params: map[string]string{}, Headers: map[string]string{}}
 	requestMsg.Uri = parameter.Uri
@@ -39,7 +33,7 @@ func TransferRequestMsg(parameter BasicConfig, config config.CdnConfig) model.Ht
 }
 
 func Invoke(url BasicConfig, jsonStr string) string {
-	config := loadConfig()
+	config := util.GetConfig()
 
 	var requestMsg = TransferRequestMsg(url, config)
 
@@ -74,26 +68,4 @@ func hmacsha1(date string, apikey string) string {
 func getRfc1123Date() string {
 	date := time.Now().UTC() // UTC time
 	return date.Format(http.TimeFormat)
-}
-
-func loadConfig() config.CdnConfig {
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("../../config")
-
-	viper.AutomaticEnv()
-
-	err := viper.ReadInConfig()
-	if err != nil {
-		fmt.Println("Error reading config file:", err)
-		log.LogFatal(fmt.Sprintf("Error reading config file:", err))
-	}
-
-	var config config.CdnConfig
-	err = viper.Unmarshal(&config)
-	if err != nil {
-		fmt.Println("Error unmarshalling config:", err)
-		log.LogFatal(fmt.Sprintf("Error unmarshalling config:", err))
-	}
-	return config
 }

@@ -11,14 +11,6 @@ import (
 
 func main() {
 
-	rootCmd := getRootCommand()
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-}
-
-func getRootCommand() *cobra.Command {
 	var rootCmd = &cobra.Command{
 		Use:   "cdnctl",
 		Short: "cdnctl is a command-line tool for managing CDNetworks",
@@ -28,7 +20,11 @@ func getRootCommand() *cobra.Command {
 	}
 
 	addCommands(rootCmd)
-	return rootCmd
+
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
 
 func addCommands(rootCmd *cobra.Command) {

@@ -1,3 +1,8 @@
 UserName: "raypro"
 ApiKey:   "98514TVVFKeNJ6dfQ8Ho6xBn5OTvph"
 EndPoint: "api.cdnetworks.com"
+ChromeDriverPath: "C:\\Users\\lunyi\\Downloads\\chromedriver-win64\\chromedriver.exe"
+CdnLoginUrl: "https://dash.cdnetworks.com/"
+CdnCertificateCreationUrl: "https://portalcdn.cdnetworks.com/v2/index#/certificate/oneKey/list?code=cert_mylist&parentCode=cert_ca&productCode=certificatemanagement"
+CdnUsername: "raypro"
+CdnPassword: "Aaa09875432"
