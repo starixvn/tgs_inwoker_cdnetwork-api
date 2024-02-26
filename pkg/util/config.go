@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
 )
 
@@ -24,33 +23,7 @@ type CdnConfig struct {
 	TelegramWebhook           string `yaml:"telegram_webhook"`
 }
 
-func GetConfig2() CdnConfig {
-	configPath := os.Getenv("CONFIGPATH")
-
-	//fmt.Printf("configPath2: %s\n", configPath)
-
-	viper.SetConfigFile(configPath)
-
-	// Read the configuration file
-	if err := viper.ReadInConfig(); err != nil {
-		log.LogFatal(fmt.Sprintf("Error reading config file: %v", err))
-	}
-
-	var config CdnConfig
-	err := viper.Unmarshal(&config)
-	if err != nil {
-		fmt.Println("Error unmarshalling config:", err)
-		log.LogFatal(fmt.Sprintf("Error unmarshalling config:", err))
-	}
-
-	fmt.Println("UserName:", config.UserName)
-
-	return config
-}
-
 func GetConfig() CdnConfig {
-	// read the output.yaml file
-	os.Setenv("CONFIGPATH", "D:\\TGS\\config.yaml")
 	data, err := os.ReadFile(os.Getenv("CONFIGPATH"))
 
 	if err != nil {
