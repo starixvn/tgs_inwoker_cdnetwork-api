@@ -22,7 +22,6 @@ type CreateCDNCertService struct {
 }
 
 func CreateCertificateByDomain(domain string) {
-
 	config := util.GetConfig()
 	cdnService, err := NewCreateCDNCertService(config)
 	if err != nil {
@@ -57,8 +56,8 @@ func NewCreateCDNCertService(config util.CdnConfig) (*CreateCDNCertService, erro
 }
 
 func (cm *CreateCDNCertService) CreateCertificate(domain string) error {
-	defer cm.svc.Stop() // Make sure to stop service when main function exits
-	defer cm.wd.Quit()
+	// defer cm.svc.Stop() // Make sure to stop service when main function exits
+	// defer cm.wd.Quit()
 
 	if err := cm.login(); err != nil {
 		return err
@@ -75,15 +74,15 @@ func (cm *CreateCDNCertService) login() error {
 		return err
 	}
 
-	if err := sendKeysToElement(cm.wd, selenium.ByCSSSelector, "js-accountinput", cm.config.CdnUsername); err != nil {
+	if err := sendKeysToElement(cm.wd, selenium.ByID, "js-accountinput", cm.config.CdnUsername); err != nil {
 		return err
 	}
 
-	if err := sendKeysToElement(cm.wd, selenium.ByCSSSelector, "js-pwdinput", cm.config.CdnPassword); err != nil {
+	if err := sendKeysToElement(cm.wd, selenium.ByID, "js-pwdinput", cm.config.CdnPassword); err != nil {
 		return err
 	}
 
-	if err := clickElement(cm.wd, selenium.ByCSSSelector, "//button[@type='submit']"); err != nil {
+	if err := clickElement(cm.wd, selenium.ByXPATH, "//button[@type='submit']"); err != nil {
 		return err
 	}
 
@@ -111,7 +110,6 @@ func (cm *CreateCDNCertService) createCertificate(domain string) error {
 	return nil
 }
 
-// Helper function to find an element and click it
 func clickElement(wd selenium.WebDriver, by, selector string) error {
 	ele, err := findElement(wd, by, selector)
 	if err != nil {
@@ -123,7 +121,6 @@ func clickElement(wd selenium.WebDriver, by, selector string) error {
 	return nil
 }
 
-// Helper function to find an element and send keys to it
 func sendKeysToElement(wd selenium.WebDriver, by, selector, keys string) error {
 	ele, err := findElement(wd, by, selector)
 	if err != nil {

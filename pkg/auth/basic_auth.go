@@ -2,11 +2,13 @@ package auth
 
 import (
 	"cdnetwork/pkg/constant"
+	"cdnetwork/pkg/log"
 	"cdnetwork/pkg/model"
 	"cdnetwork/pkg/util"
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/base64"
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -34,6 +36,7 @@ func TransferRequestMsg(parameter BasicConfig, config util.CdnConfig) model.Http
 
 func Invoke(url BasicConfig, jsonStr string) string {
 	config := util.GetConfig()
+	log.LogInfo(fmt.Sprintf("UserName %s", config.UserName))
 
 	var requestMsg = TransferRequestMsg(url, config)
 
@@ -41,8 +44,13 @@ func Invoke(url BasicConfig, jsonStr string) string {
 		requestMsg.Body = jsonStr
 	}
 
+	log.LogInfo(fmt.Sprintf("UserName2 %s", config.UserName))
+	log.LogInfo(fmt.Sprintf("ApiKey %s", config.ApiKey))
+	log.LogInfo(fmt.Sprintf("EndPoint %s", config.EndPoint))
+
 	dateStr := getRfc1123Date()
 	authorization := "Basic " + authorization(config.UserName, hmacsha1(dateStr, config.ApiKey))
+	log.LogInfo(fmt.Sprintf("authorization %s", authorization))
 	requestMsg.Headers["Date"] = dateStr
 	requestMsg.Headers["Host"] = requestMsg.Host
 	requestMsg.Headers["Content-Type"] = constant.ApplicationJson

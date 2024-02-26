@@ -13,7 +13,6 @@ func Call(requestMsg model.HttpRequestMsg) string {
 	client := &http.Client{}
 	req, err := http.NewRequest(requestMsg.Method, requestMsg.Url, strings.NewReader(requestMsg.Body))
 	if err != nil {
-		// handle error
 		log.LogError(err.Error())
 	}
 	for key := range requestMsg.Headers {
@@ -31,7 +30,6 @@ func Call(requestMsg model.HttpRequestMsg) string {
 		// handle error
 		log.LogError(err.Error())
 	}
-	// 打印响应信息
 	log.LogInfo(string(body))
 	return string(body)
 }

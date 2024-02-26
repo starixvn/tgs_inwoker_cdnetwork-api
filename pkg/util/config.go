@@ -1,8 +1,10 @@
 package util
 
 import (
+	"bytes"
 	"cdnetwork/pkg/log"
 	"fmt"
+	"os"
 
 	"github.com/spf13/viper"
 )
@@ -16,20 +18,24 @@ type CdnConfig struct {
 	CdnCertificateCreationUrl string
 	CdnUsername               string
 	CdnPassword               string
+	TelegramBotToken          string
+	TelegramChatId            string
 }
 
 func GetConfig() CdnConfig {
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("../../config")
 
-	viper.AutomaticEnv()
+	os.Setenv("CONFIGPATH", "../../config/config.yaml")
+	configPath := os.Getenv("CONFIGPATH")
 
-	err := viper.ReadInConfig()
+	fmt.Sprintf("configPath: %s", configPath)
+
+	fileContent, err := os.ReadFile(configPath)
 	if err != nil {
-		fmt.Println("Error reading config file:", err)
-		log.LogFatal(fmt.Sprintf("Error reading config file:", err))
+		log.LogFatal(fmt.Sprintf("Error reading config file: %v", err))
 	}
+
+	viper.SetConfigType("yaml")
+	viper.ReadConfig(bytes.NewBuffer(fileContent))
 
 	var config CdnConfig
 	err = viper.Unmarshal(&config)
@@ -37,5 +43,8 @@ func GetConfig() CdnConfig {
 		fmt.Println("Error unmarshalling config:", err)
 		log.LogFatal(fmt.Sprintf("Error unmarshalling config:", err))
 	}
+
+	fmt.Println("UserName:", config.UserName)
+
 	return config
 }

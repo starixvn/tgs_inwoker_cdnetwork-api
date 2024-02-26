@@ -10,7 +10,6 @@ import (
 )
 
 func main() {
-
 	var rootCmd = &cobra.Command{
 		Use:   "cdnctl",
 		Short: "cdnctl is a command-line tool for managing CDNetworks",
@@ -28,7 +27,14 @@ func main() {
 }
 
 func addCommands(rootCmd *cobra.Command) {
-	rootCmd.AddCommand(getCreateCommand())
+	createCmd := &cobra.Command{
+		Use:   "create",
+		Short: "create is used to create resources",
+	}
+
+	getCreateCommand(createCmd)
+	createCertificateCommand(createCmd)
+	rootCmd.AddCommand(createCmd)
 	rootCmd.AddCommand(getDeleteCommand())
 	rootCmd.AddCommand(getDisableCommand())
 	rootCmd.AddCommand(getEditGroupCommand())
@@ -37,20 +43,21 @@ func addCommands(rootCmd *cobra.Command) {
 	rootCmd.AddCommand(getEnableDomainCommand())
 }
 
-func getCreateCommand() *cobra.Command {
+func getCreateCommand(createCmd *cobra.Command) {
 	var cmd = &cobra.Command{
-		Use:   "create <domain>",
-		Short: "Create a new domain",
-		Args:  cobra.ExactArgs(1),
+		Use:   "domain [domain] [orginset]",
+		Short: "Create a new domain and its originset",
+		Args:  cobra.ExactArgs(2),
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("Creating domain: %s\n", args[0])
+			fmt.Printf("Creating domain: %s, originset: %s \n", args[0], args[1])
 			cdnCommand := &cli.CdnCommand{
 				DomainName: args[0],
+				OriginSet:  args[1],
 			}
 			cdnCommand.CreateDomain()
 		},
 	}
-	return cmd
+	createCmd.AddCommand(cmd)
 }
 
 func getDeleteCommand() *cobra.Command {
@@ -146,4 +153,19 @@ func getCertificateCommand() *cobra.Command {
 		},
 	}
 	return cmd
+}
+
+func createCertificateCommand(createCmd *cobra.Command) {
+	var cmd = &cobra.Command{
+		Use:   "cert [domain]",
+		Short: "Create certificate of domain",
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			cdnCommand := &cli.CdnCommand{
+				DomainName: args[0],
+			}
+			cdnCommand.CreateCertificate()
+		},
+	}
+	createCmd.AddCommand(cmd)
 }

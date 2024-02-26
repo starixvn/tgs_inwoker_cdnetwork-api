@@ -2,6 +2,7 @@ package cli
 
 import (
 	"cdnetwork/internal/cdnetworks/controlGroup"
+	"cdnetwork/internal/cdnetworks/createCertificate"
 	"cdnetwork/internal/cdnetworks/createDomain"
 	"cdnetwork/internal/cdnetworks/deleteDomain"
 	"cdnetwork/internal/cdnetworks/disableDomain"
@@ -25,6 +26,7 @@ type CdnCommander interface {
 	EnableDomain()
 	GetCertificate()
 	GetDomainId()
+	CreateCertificate()
 }
 
 func (c *CdnCommand) UpdateControlGroup() {
@@ -57,4 +59,8 @@ func (c *CdnCommand) GetCertificate() string {
 
 func (c *CdnCommand) GetDomainId() int {
 	return getDomainId.GetDomainId(c.DomainName)
+}
+
+func (c *CdnCommand) CreateCertificate() {
+	createCertificate.CreateCertificateByDomain(c.DomainName)
 }
