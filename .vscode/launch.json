@@ -11,7 +11,7 @@
             "mode": "auto",
             "program": "${fileDirname}",
             "env": {
-                "CONFIGPATH": "../../config/config.yaml"
+                "CONFIGPATH": "D:\\TGS\\config.yaml"
             }
         }
     ]

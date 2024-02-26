@@ -25,7 +25,6 @@ type CdnConfig struct {
 }
 
 func GetConfig2() CdnConfig {
-	os.Setenv("CONFIGPATH", "D:\\TGS\\config.yaml")
 	configPath := os.Getenv("CONFIGPATH")
 
 	//fmt.Printf("configPath2: %s\n", configPath)
