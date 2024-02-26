@@ -1,7 +1,7 @@
-package getDomainId
+package get_domain_id
 
 import (
-	"cdnetwork/internal/cdnetworks/getDomainId/models"
+	"cdnetwork/internal/cdnetworks/get_domain_id/models"
 	"cdnetwork/pkg/auth"
 	"cdnetwork/pkg/log"
 	"encoding/json"

@@ -1,7 +1,7 @@
-package deleteDomain
+package delete_domain
 
 import (
-	"cdnetwork/internal/cdnetworks/deleteDomain/models"
+	"cdnetwork/internal/cdnetworks/delete_domain/models"
 	"cdnetwork/pkg/auth"
 	"fmt"
 )

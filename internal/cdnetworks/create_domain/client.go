@@ -1,7 +1,7 @@
-package createDomain
+package create_domain
 
 import (
-	"cdnetwork/internal/cdnetworks/createDomain/models"
+	"cdnetwork/internal/cdnetworks/create_domain/models"
 	"cdnetwork/pkg/auth"
 	"fmt"
 	"strings"

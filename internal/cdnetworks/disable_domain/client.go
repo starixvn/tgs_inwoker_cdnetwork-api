@@ -1,7 +1,7 @@
-package disableDomain
+package disable_domain
 
 import (
-	"cdnetwork/internal/cdnetworks/disableDomain/models"
+	"cdnetwork/internal/cdnetworks/disable_domain/models"
 	"cdnetwork/pkg/auth"
 	"fmt"
 )

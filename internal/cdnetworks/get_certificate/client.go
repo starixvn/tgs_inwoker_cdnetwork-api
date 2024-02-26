@@ -1,7 +1,7 @@
-package getCertificate
+package get_certificate
 
 import (
-	"cdnetwork/internal/cdnetworks/getCertificate/models"
+	"cdnetwork/internal/cdnetworks/get_certificate/models"
 	"cdnetwork/pkg/auth"
 	"encoding/json"
 	"encoding/xml"

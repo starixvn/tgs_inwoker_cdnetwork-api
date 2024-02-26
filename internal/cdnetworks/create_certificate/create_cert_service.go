@@ -1,4 +1,4 @@
-package createCertificate
+package create_certificate
 
 import (
 	"cdnetwork/pkg/log"

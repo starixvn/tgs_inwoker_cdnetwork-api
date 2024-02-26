@@ -1,7 +1,7 @@
-package controlGroup
+package control_group
 
 import (
-	"cdnetwork/internal/cdnetworks/controlGroup/models"
+	"cdnetwork/internal/cdnetworks/control_group/models"
 	"cdnetwork/pkg/auth" // Import your auth package
 	"fmt"
 	"strings"

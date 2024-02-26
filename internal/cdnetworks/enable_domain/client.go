@@ -1,7 +1,7 @@
-package enableDomain
+package enable_domain
 
 import (
-	"cdnetwork/internal/cdnetworks/enableDomain/models"
+	"cdnetwork/internal/cdnetworks/enable_domain/models"
 	"cdnetwork/pkg/auth"
 	"cdnetwork/pkg/log"
 	"fmt"

@@ -1,14 +1,14 @@
 package cli
 
 import (
-	"cdnetwork/internal/cdnetworks/controlGroup"
-	"cdnetwork/internal/cdnetworks/createCertificate"
-	"cdnetwork/internal/cdnetworks/createDomain"
-	"cdnetwork/internal/cdnetworks/deleteDomain"
-	"cdnetwork/internal/cdnetworks/disableDomain"
-	"cdnetwork/internal/cdnetworks/enableDomain"
-	"cdnetwork/internal/cdnetworks/getCertificate"
-	"cdnetwork/internal/cdnetworks/getDomainId"
+	"cdnetwork/internal/cdnetworks/control_group"
+	"cdnetwork/internal/cdnetworks/create_certificate"
+	"cdnetwork/internal/cdnetworks/create_domain"
+	"cdnetwork/internal/cdnetworks/delete_domain"
+	"cdnetwork/internal/cdnetworks/disable_domain"
+	"cdnetwork/internal/cdnetworks/enable_domain"
+	"cdnetwork/internal/cdnetworks/get_certificate"
+	"cdnetwork/internal/cdnetworks/get_domain_id"
 )
 
 type CdnCommand struct {
@@ -30,27 +30,27 @@ type CdnCommander interface {
 }
 
 func (c *CdnCommand) UpdateControlGroup() {
-	controlGroup.UpdateControlGroup(c.DomainName)
+	control_group.UpdateControlGroup(c.DomainName)
 }
 
 func (c *CdnCommand) CreateDomain() {
-	createDomain.CreateDomains(c.DomainName, c.OriginSet)
+	create_domain.CreateDomains(c.DomainName, c.OriginSet)
 }
 
 func (c *CdnCommand) DeleteDomain() {
-	deleteDomain.DeleteDomain(c.DomainName, c.DomainId)
+	delete_domain.DeleteDomain(c.DomainName, c.DomainId)
 }
 
 func (c *CdnCommand) DisableDomain() {
-	disableDomain.DisableDomain(c.DomainName)
+	disable_domain.DisableDomain(c.DomainName)
 }
 
 func (c *CdnCommand) EnableDomain() {
-	enableDomain.EnableDomain(c.DomainId)
+	enable_domain.EnableDomain(c.DomainId)
 }
 
 func (c *CdnCommand) GetCertificate() string {
-	res, err := getCertificate.GetCertificate(c.DomainName)
+	res, err := get_certificate.GetCertificate(c.DomainName)
 	if err != nil {
 		return err.Error()
 	}
@@ -58,9 +58,9 @@ func (c *CdnCommand) GetCertificate() string {
 }
 
 func (c *CdnCommand) GetDomainId() int {
-	return getDomainId.GetDomainId(c.DomainName)
+	return get_domain_id.GetDomainId(c.DomainName)
 }
 
 func (c *CdnCommand) CreateCertificate() {
-	createCertificate.CreateCertificateByDomain(c.DomainName)
+	create_certificate.CreateCertificateByDomain(c.DomainName)
 }
