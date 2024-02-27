@@ -1,34 +1,22 @@
 package cloudflare
 
 import (
-	"bytes"
 	"cdnetwork/pkg/log"
 	"cdnetwork/pkg/util"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
-// DNSRecord represents the structure of a DNS record
-type DNSRecord struct {
-	ID      string `json:"id"`
-	Type    string `json:"type"`
-	Name    string `json:"name"`
-	Content string `json:"content"`
-	TTL     int    `json:"ttl"`
-	Proxied bool   `json:"proxied"`
-}
-
-func CreateDNS(domain string) {
-
+func CreateDNS(domain string) error {
 	config := util.GetConfig()
 
 	apiToken := config.CloudflareToken
 	zoneName := extractDomain(domain)
-	// Zone ID of your domain
 	zoneID := GetZoneId(zoneName)
 
-	// DNS record data
 	record := DNSRecord{
 		Type:    "CNAME",
 		Name:    domain,            // Name of the record
@@ -37,43 +25,27 @@ func CreateDNS(domain string) {
 		Proxied: false, // Whether the record is proxied through Cloudflare
 	}
 
-	// Convert record data to JSON
 	recordJSON, err := json.Marshal(record)
 	if err != nil {
 		fmt.Println("Error marshaling JSON:", err)
-		return
+		return err
 	}
 
 	// API endpoint to create DNS record
-	apiEndpoint := fmt.Sprintf("https://api.cloudflare.com/client/v4/zones/%s/dns_records", zoneID)
+	endpoint := fmt.Sprintf("https://api.cloudflare.com/client/v4/zones/%s/dns_records", zoneID)
 
-	// Create HTTP request
-	req, err := http.NewRequest("POST", apiEndpoint, bytes.NewBuffer(recordJSON))
+	resp, err := sendRequest(apiToken, "POST", endpoint, strings.NewReader(string(recordJSON)))
 	if err != nil {
-		fmt.Println("Error creating request:", err)
-		return
+		return err
 	}
-
-	// Set headers
-	req.Header.Set("Authorization", "Bearer "+apiToken)
-	req.Header.Set("Content-Type", "application/json")
-
-	// Send HTTP request
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println("Error sending request:", err)
-		log.LogError(fmt.Sprintf("Error sending request: %v", err))
-		return
-	}
-	defer resp.Body.Close()
 
 	// Check response status
 	if resp.StatusCode != http.StatusOK {
 		fmt.Println("Error:", resp.Status)
 		log.LogError(fmt.Sprintf("Error: %s", resp.Status))
-		return
+		return errors.New("http status is not 200")
 	}
 
 	fmt.Println("DNS record created successfully!")
+	return nil
 }

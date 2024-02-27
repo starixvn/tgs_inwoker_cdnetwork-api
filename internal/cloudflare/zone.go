@@ -36,7 +36,7 @@ func getZoneID(apiToken, domain string) (string, error) {
 	endpoint := fmt.Sprintf("https://api.cloudflare.com/client/v4/zones?name=%s", domain)
 
 	// Create a new HTTP client
-	resp, err := sendRequest(apiToken, "GET", endpoint)
+	resp, err := sendRequest(apiToken, "GET", endpoint, nil)
 	if err != nil {
 		return "", err
 	}

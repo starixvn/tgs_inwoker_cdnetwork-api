@@ -9,6 +9,14 @@ import (
 	"strings"
 )
 
+type DNSRecord struct {
+	ID      string `json:"id"`
+	Type    string `json:"type"`
+	Name    string `json:"name"`
+	Content string `json:"content"`
+	TTL     int    `json:"ttl"`
+	Proxied bool   `json:"proxied"`
+}
 type DNSRecordsResponse struct {
 	Result []DNSRecord `json:"result"`
 }
@@ -49,7 +57,7 @@ func getDNSInfo(apiToken, zoneID, dnsName string) ([]DNSRecord, error) {
 	// Construct the endpoint URL
 	endpoint := fmt.Sprintf("https://api.cloudflare.com/client/v4/zones/%s/dns_records?name=%s", zoneID, dnsName)
 
-	resp, err := sendRequest(apiToken, "GET", endpoint)
+	resp, err := sendRequest(apiToken, "GET", endpoint, nil)
 	if err != nil {
 		return nil, err
 	}

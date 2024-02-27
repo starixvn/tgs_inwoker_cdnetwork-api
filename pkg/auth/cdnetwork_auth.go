@@ -24,19 +24,18 @@ func TransferRequestMsg(parameter BasicConfig, config util.CdnConfig) model.Http
 	requestMsg.Uri = parameter.Uri
 	requestMsg.Method = parameter.Method
 	requestMsg.Url = constant.HttpRequestPrefix + parameter.Uri
-	if len(config.EndPoint) == 0 || "{endPoint}" == config.EndPoint {
+	if len(config.CdnEndPoint) == 0 || "{endPoint}" == config.CdnEndPoint {
 		requestMsg.Host = constant.HttpRequestDomain
 		requestMsg.Url = "https://" + constant.HttpRequestDomain + parameter.Uri
 	} else {
-		requestMsg.Host = config.EndPoint
-		requestMsg.Url = "https://" + config.EndPoint + parameter.Uri
+		requestMsg.Host = config.CdnEndPoint
+		requestMsg.Url = "https://" + config.CdnEndPoint + parameter.Uri
 	}
 	return requestMsg
 }
 
 func Invoke(url BasicConfig, jsonStr string) string {
 	config := util.GetConfig()
-	log.LogInfo(fmt.Sprintf("UserName %s", config.UserName))
 
 	var requestMsg = TransferRequestMsg(url, config)
 
@@ -44,12 +43,8 @@ func Invoke(url BasicConfig, jsonStr string) string {
 		requestMsg.Body = jsonStr
 	}
 
-	log.LogInfo(fmt.Sprintf("UserName2 %s", config.UserName))
-	log.LogInfo(fmt.Sprintf("ApiKey %s", config.ApiKey))
-	log.LogInfo(fmt.Sprintf("EndPoint %s", config.EndPoint))
-
 	dateStr := getRfc1123Date()
-	authorization := "Basic " + authorization(config.UserName, hmacsha1(dateStr, config.ApiKey))
+	authorization := "Basic " + authorization(config.CdnUserName, hmacsha1(dateStr, config.CdnApiKey))
 	log.LogInfo(fmt.Sprintf("authorization %s", authorization))
 	requestMsg.Headers["Date"] = dateStr
 	requestMsg.Headers["Host"] = requestMsg.Host

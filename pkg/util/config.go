@@ -9,19 +9,21 @@ import (
 )
 
 type CdnConfig struct {
-	UserName                  string `yaml:"user_name"`
-	ApiKey                    string `yaml:"api_key"`
-	EndPoint                  string `yaml:"end_point"`
-	ChromeDriverPath          string `yaml:"chrome_driver_path"`
+	CdnUserName               string `yaml:"cdn_user_name"`
+	CdnApiKey                 string `yaml:"cdn_api_key"`
+	CdnEndPoint               string `yaml:"cdn_end_point"`
 	CdnLoginUrl               string `yaml:"cdn_login_url"`
 	CdnCertificateCreationUrl string `yaml:"cdn_certificate_creation_url"`
-	CdnUsername               string `yaml:"cdn_username"`
 	CdnPassword               string `yaml:"cdn_password"`
 	TelegramBotToken          string `yaml:"telegram_bot_token"`
 	TelegramChatId            string `yaml:"telegram_chat_id"`
 	CloudflareToken           string `yaml:"cloudflare_token"`
 	TelegramWebhook           string `yaml:"telegram_webhook"`
 	DnsContent                string `yaml:"dns_content"`
+	ChromeDriverPath          string `yaml:"chrome_driver_path"`
+	NamecheapApiKey           string `yaml:"namecheap_api_key"`
+	NamecheapUsername         string `yaml:"namecheap_username"`
+	NamecheapClientIp         string `yaml:"namecheap_client_ip"`
 }
 
 func GetConfig() CdnConfig {

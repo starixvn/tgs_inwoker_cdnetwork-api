@@ -2,31 +2,32 @@ package main
 
 import (
 	"cdnetwork/internal/cli"
+	"cdnetwork/internal/namecheap"
 	"cdnetwork/pkg/log"
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 )
 
 func main() {
 
-	//cloudflare.CreateDNS("autotest1.rpgp.cc")
+	//cloudflare.GetDnsInfo("autotest1.rpgp.cc")
+	domains := namecheap.GetExpiredDomains()
 
-	var rootCmd = &cobra.Command{
-		Use:   "cdnctl",
-		Short: "cdnctl is a command-line tool for managing CDNetworks",
-		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("Usage: cdnctl <command> [options]")
-		},
-	}
+	// var rootCmd = &cobra.Command{
+	// 	Use:   "cdnctl",
+	// 	Short: "cdnctl is a command-line tool for managing CDNetworks",
+	// 	Run: func(cmd *cobra.Command, args []string) {
+	// 		fmt.Println("Usage: cdnctl <command> [options]")
+	// 	},
+	// }
 
-	addCommands(rootCmd)
+	// addCommands(rootCmd)
 
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	// if err := rootCmd.Execute(); err != nil {
+	// 	fmt.Println(err)
+	// 	os.Exit(1)
+	// }
 }
 
 func addCommands(rootCmd *cobra.Command) {

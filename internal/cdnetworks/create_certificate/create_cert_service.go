@@ -74,7 +74,7 @@ func (cm *CreateCDNCertService) login() error {
 		return err
 	}
 
-	if err := sendKeysToElement(cm.wd, selenium.ByID, "js-accountinput", cm.config.CdnUsername); err != nil {
+	if err := sendKeysToElement(cm.wd, selenium.ByID, "js-accountinput", cm.config.CdnUserName); err != nil {
 		return err
 	}
 
