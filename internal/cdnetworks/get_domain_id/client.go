@@ -63,13 +63,13 @@ func GetDomainId(domainName string) int {
 		log.LogFatal(fmt.Sprintf("解析 JSON 失败: %s", err))
 		return -1
 	}
+
 	var DomainID int
 	// 遍历DomainSummaries并输出所需的键值对
 	for _, summary := range domainkv.DomainSummaries {
 		if summary.DomainName == domainName {
 			DomainID = summary.DomainID
 			return DomainID
-			break
 		}
 	}
 	return -1

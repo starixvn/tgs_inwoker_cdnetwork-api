@@ -9,6 +9,8 @@ import (
 	"cdnetwork/internal/cdnetworks/enable_domain"
 	"cdnetwork/internal/cdnetworks/get_certificate"
 	"cdnetwork/internal/cdnetworks/get_domain_id"
+	"cdnetwork/internal/cloudflare"
+	"time"
 )
 
 type CdnCommand struct {
@@ -35,10 +37,18 @@ func (c *CdnCommand) UpdateControlGroup() {
 
 func (c *CdnCommand) CreateDomain() {
 	create_domain.CreateDomains(c.DomainName, c.OriginSet)
+
+	time.Sleep(1 * time.Second)
+	control_group.UpdateControlGroup(c.DomainName)
+	time.Sleep(1 * time.Second)
+	create_certificate.CreateCertificateByDomain(c.DomainName)
+
+	cloudflare.CreateDNS(c.DomainName)
+
 }
 
 func (c *CdnCommand) DeleteDomain() {
-	delete_domain.DeleteDomain(c.DomainName, c.DomainId)
+	delete_domain.DeleteDomain(c.DomainName)
 }
 
 func (c *CdnCommand) DisableDomain() {

@@ -21,13 +21,14 @@ type CdnConfig struct {
 	TelegramChatId            string `yaml:"telegram_chat_id"`
 	CloudflareToken           string `yaml:"cloudflare_token"`
 	TelegramWebhook           string `yaml:"telegram_webhook"`
+	DnsContent                string `yaml:"dns_content"`
 }
 
 func GetConfig() CdnConfig {
 	data, err := os.ReadFile(os.Getenv("CONFIGPATH"))
 
 	if err != nil {
-		log.LogFatal(fmt.Sprintf("Fail to load config: %v", err))
+		log.LogFatal(fmt.Sprintf("Fail to load config: %s  %v", os.Getenv("CONFIGPATH"), err))
 		panic(err)
 	}
 

@@ -2,32 +2,31 @@ package main
 
 import (
 	"cdnetwork/internal/cli"
-	"cdnetwork/internal/cloudflare"
 	"cdnetwork/pkg/log"
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
 
 func main() {
 
-	cloudflare.GetDnsInfo("alertmanager.rpgp.cc")
-	//fmt.Println(fmt.Sprintf("zoneid: %s", zoneid))
+	//cloudflare.CreateDNS("autotest1.rpgp.cc")
 
-	// var rootCmd = &cobra.Command{
-	// 	Use:   "cdnctl",
-	// 	Short: "cdnctl is a command-line tool for managing CDNetworks",
-	// 	Run: func(cmd *cobra.Command, args []string) {
-	// 		fmt.Println("Usage: cdnctl <command> [options]")
-	// 	},
-	// }
+	var rootCmd = &cobra.Command{
+		Use:   "cdnctl",
+		Short: "cdnctl is a command-line tool for managing CDNetworks",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println("Usage: cdnctl <command> [options]")
+		},
+	}
 
-	// addCommands(rootCmd)
+	addCommands(rootCmd)
 
-	// if err := rootCmd.Execute(); err != nil {
-	// 	fmt.Println(err)
-	// 	os.Exit(1)
-	// }
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
 
 func addCommands(rootCmd *cobra.Command) {
@@ -35,16 +34,15 @@ func addCommands(rootCmd *cobra.Command) {
 		Use:   "create",
 		Short: "create is used to create resources",
 	}
-
 	getCreateCommand(createCmd)
 	createCertificateCommand(createCmd)
 	rootCmd.AddCommand(createCmd)
+
 	rootCmd.AddCommand(getDeleteCommand())
 	rootCmd.AddCommand(getDisableCommand())
-	rootCmd.AddCommand(getEditGroupCommand())
 	rootCmd.AddCommand(getCertificateCommand())
-	rootCmd.AddCommand(getDomainIdCommand())
 	rootCmd.AddCommand(getEnableDomainCommand())
+	rootCmd.AddCommand(getDomainIdCommand())
 }
 
 func getCreateCommand(createCmd *cobra.Command) {
@@ -112,37 +110,6 @@ func getEnableDomainCommand() *cobra.Command {
 	return cmd
 }
 
-func getEditGroupCommand() *cobra.Command {
-	var cmd = &cobra.Command{
-		Use:   "update <domains>",
-		Short: "Update a group of domains",
-		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			log.LogInfo(fmt.Sprintf("Edit domain's group: %s\n", args[0]))
-			cdnCommand := &cli.CdnCommand{
-				DomainName: args[0],
-			}
-			cdnCommand.UpdateControlGroup()
-		},
-	}
-	return cmd
-}
-
-func getDomainIdCommand() *cobra.Command {
-	var cmd = &cobra.Command{
-		Use:   "getdomainid <domains>",
-		Short: "Get domain's id",
-		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			cdnCommand := &cli.CdnCommand{
-				DomainName: args[0],
-			}
-			res := cdnCommand.GetDomainId()
-			fmt.Printf("Domain id: %d\n", res)
-		},
-	}
-	return cmd
-}
 func getCertificateCommand() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "getcert <domains>",
@@ -172,4 +139,20 @@ func createCertificateCommand(createCmd *cobra.Command) {
 		},
 	}
 	createCmd.AddCommand(cmd)
+}
+
+func getDomainIdCommand() *cobra.Command {
+	var cmd = &cobra.Command{
+		Use:   "getdomainid <domains>",
+		Short: "Get domain's id",
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			cdnCommand := &cli.CdnCommand{
+				DomainName: args[0],
+			}
+			res := cdnCommand.GetDomainId()
+			fmt.Printf("Domain id: %d\n", res)
+		},
+	}
+	return cmd
 }

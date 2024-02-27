@@ -9,14 +9,6 @@ import (
 	"strings"
 )
 
-type DNSRecord struct {
-	ID        string `json:"id"`
-	Type      string `json:"type"`
-	Name      string `json:"name"`
-	Content   string `json:"content"`
-	Proxiable string `json:"proxiable"`
-}
-
 type DNSRecordsResponse struct {
 	Result []DNSRecord `json:"result"`
 }

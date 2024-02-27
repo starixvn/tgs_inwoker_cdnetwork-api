@@ -2,19 +2,43 @@ package delete_domain
 
 import (
 	"cdnetwork/internal/cdnetworks/delete_domain/models"
+	"cdnetwork/internal/cdnetworks/get_domain_id"
 	"cdnetwork/pkg/auth"
+	"encoding/xml"
 	"fmt"
+	"strconv"
 )
 
-func DeleteDomain(domainName string, deletedid string) {
+type Response struct {
+	XMLName xml.Name `xml:"response"`
+	Code    string   `xml:"code"`
+	Message string   `xml:"message"`
+}
+
+func DeleteDomain(domainName string) {
+
+	fmt.Printf("call delete domain %#v\n", domainName)
+	_domainId := get_domain_id.GetDomainId(domainName)
+
+	fmt.Printf("response delete domain is %#v\n", _domainId)
+
+	domainId := strconv.Itoa(_domainId)
 	request := &models.DeleteApiDomainServiceRequest{}
 	request.SetDomainName(domainName)
-	request.SetDomainId(deletedid)
+	request.SetDomainId(domainId)
 
-	apiuri := fmt.Sprintf("/api/domain/%s", deletedid)
+	apiuri := fmt.Sprintf("/api/domain/%s", domainId)
 	config := auth.BasicConfig{
 		Uri:    apiuri,
 		Method: "DELETE"}
-	response := auth.Invoke(config, request.String())
-	fmt.Printf("response body is %#v\n", response)
+	xml_response := auth.Invoke(config, request.String())
+
+	var response Response
+	err := xml.Unmarshal([]byte(xml_response), &response)
+	if err != nil {
+		fmt.Println("Error parsing XML:", err)
+		return
+	}
+
+	fmt.Printf("response: %#v\n", response.Message)
 }
