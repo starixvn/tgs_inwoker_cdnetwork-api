@@ -54,9 +54,9 @@ type Domain struct {
 
 func GetExpiredDomains() []Domain {
 	config := util.GetConfig()
-	userName := config.NamecheapUsername
-	apiKey := config.NamecheapApiKey
-	clinetIp := config.NamecheapClientIp
+	userName := config.Namecheap.NamecheapUsername
+	apiKey := config.Namecheap.NamecheapApiKey
+	clinetIp := config.Namecheap.NamecheapClientIp
 	pageSize := 100
 
 	url := fmt.Sprintf("%s?ApiUser=%s&ApiKey=%s&UserName=%s&Command=%s&ClientIp=%s&PageSize=%d&Page=", apiUrl, userName, apiKey, userName, command, clinetIp, pageSize)

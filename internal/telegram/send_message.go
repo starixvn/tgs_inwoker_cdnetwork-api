@@ -31,7 +31,7 @@ func SendMessage(msg string) {
 
 	config := util.GetConfig()
 
-	bot, err := NewTelegramBot(config.TelegramBotToken)
+	bot, err := NewTelegramBot(config.Telegram.TelegramBotToken)
 	if err != nil {
 		log.LogFatal(err.Error())
 	}
@@ -40,7 +40,7 @@ func SendMessage(msg string) {
 
 	log.LogError(fmt.Sprintf("Authorized on account %s", bot.Bot.Self.UserName))
 
-	chatid, _ := strconv.Atoi(config.TelegramChatId)
+	chatid, _ := strconv.Atoi(config.Telegram.TelegramChatId)
 	chatID := int64(chatid)
 
 	if err := bot.SendMessage(chatID, msg); err != nil {

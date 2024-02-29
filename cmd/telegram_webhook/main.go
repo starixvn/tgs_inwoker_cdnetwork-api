@@ -13,13 +13,13 @@ import (
 func main() {
 	config := util.GetConfig()
 	// Create a new bot instance
-	bot, err := tgbotapi.NewBotAPI(config.TelegramBotToken)
+	bot, err := tgbotapi.NewBotAPI(config.Telegram.TelegramBotToken)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Set the webhook URL
-	webhookURL := fmt.Sprintf("https://%s/webhook/", config.TelegramWebhook)
+	webhookURL := fmt.Sprintf("https://%s/webhook/", config.Telegram.TelegramWebhook)
 	_, err = bot.SetWebhook(tgbotapi.NewWebhook(webhookURL))
 	if err != nil {
 		log.Fatal(err)

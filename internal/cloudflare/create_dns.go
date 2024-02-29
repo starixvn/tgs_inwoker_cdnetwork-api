@@ -20,7 +20,7 @@ func CreateDNS(domain string) error {
 	record := DNSRecord{
 		Type:    "CNAME",
 		Name:    domain,            // Name of the record
-		Content: config.DnsContent, // IP address or content of the record
+		Content: config.Cdnetwork.DnsContent, // IP address or content of the record
 		TTL:     1,
 		Proxied: false, // Whether the record is proxied through Cloudflare
 	}

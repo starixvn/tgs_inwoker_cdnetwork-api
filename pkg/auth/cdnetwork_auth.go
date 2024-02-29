@@ -37,14 +37,14 @@ func TransferRequestMsg(parameter BasicConfig, config util.CdnConfig) model.Http
 func Invoke(url BasicConfig, jsonStr string) string {
 	config := util.GetConfig()
 
-	var requestMsg = TransferRequestMsg(url, config)
+	var requestMsg = TransferRequestMsg(url, config.Cdnetwork)
 
 	if url.Method == "POST" || url.Method == "PUT" || url.Method == "PATCH" || url.Method == "DELETE" {
 		requestMsg.Body = jsonStr
 	}
 
 	dateStr := getRfc1123Date()
-	authorization := "Basic " + authorization(config.CdnUserName, hmacsha1(dateStr, config.CdnApiKey))
+	authorization := "Basic " + authorization(config.Cdnetwork.CdnUserName, hmacsha1(dateStr, config.Cdnetwork.CdnApiKey))
 	log.LogInfo(fmt.Sprintf("authorization %s", authorization))
 	requestMsg.Headers["Date"] = dateStr
 	requestMsg.Headers["Host"] = requestMsg.Host

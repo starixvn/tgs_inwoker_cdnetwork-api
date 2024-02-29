@@ -23,7 +23,7 @@ type CreateCDNCertService struct {
 
 func CreateCertificateByDomain(domain string) {
 	config := util.GetConfig()
-	cdnService, err := NewCreateCDNCertService(config)
+	cdnService, err := NewCreateCDNCertService(config.Cdnetwork)
 	if err != nil {
 		fmt.Printf("Failed to initialize CDN service: %v\n", err)
 		return
