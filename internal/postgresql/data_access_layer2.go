@@ -17,7 +17,7 @@ func NewDataAccessLayer2(config util.TgsConfig) (*DataAccess, error) {
 
 	fmt.Println("conn:" + connStr)
 
-	db, err := sql.Open("postgres1", connStr)
+	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.LogFatal(fmt.Sprintf("Failed to connect to database: %v", err))
 		panic(err)
