@@ -4,6 +4,7 @@ import (
 	"cdnetwork/pkg/util"
 	"fmt"
 
+	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 )
 
@@ -14,13 +15,13 @@ func GetAgents() {
 	if err != nil {
 		panic(err)
 	}
-	defer dbaccess.Listener.Close()
-	defer dbaccess.SshClient.Close()
+	// defer dbaccess.Listener.Close()
+	// defer dbaccess.SshClient.Close()
 	defer dbaccess.Db.Close()
 
 	fmt.Println("start query")
 
-	rows, err := dbaccess.Db.Query("SELECT * FROM dbo.agents")
+	rows, err := dbaccess.Db.Query("SELECT id, username FROM dbo.agents")
 	fmt.Println("start row")
 
 	if err != nil {
@@ -32,7 +33,7 @@ func GetAgents() {
 
 	for rows.Next() {
 		var (
-			id       int
+			id       uuid.UUID
 			username string
 		)
 		// Scan the values from the row into variables
