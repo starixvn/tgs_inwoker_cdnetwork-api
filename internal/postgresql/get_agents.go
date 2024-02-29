@@ -9,7 +9,7 @@ import (
 
 func GetAgents() {
 	config := util.GetConfig()
-	dbaccess, err := NewDataAccessLayer(config)
+	dbaccess, err := NewDataAccessLayer2(config)
 
 	if err != nil {
 		panic(err)
