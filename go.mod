@@ -1,6 +1,6 @@
 module cdnetwork
 
-go 1.21.1
+go 1.23
 
 require (
 	github.com/alibabacloud-go/tea v1.2.2
