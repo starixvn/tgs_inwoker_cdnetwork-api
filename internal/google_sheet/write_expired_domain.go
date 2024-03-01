@@ -5,8 +5,10 @@ import (
 	"cdnetwork/pkg/util"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"log"
 
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	"google.golang.org/api/sheets/v4"
 )
@@ -14,7 +16,22 @@ import (
 func CreateExpiredDomainExcel(domains []postgresql.DomainForExcel) {
 
 	config := util.GetConfig()
-	sheetsService, err := sheets.NewService(context.Background(), option.WithAPIKey(config.GoogleApiKey))
+
+	ctx := context.Background()
+
+	// Read the contents of credentials.json file
+	credentialsJSON, err := ioutil.ReadFile(config.GoogleApiKey)
+	if err != nil {
+		log.Fatalf("Unable to read credentials file: %v", err)
+	}
+
+	// Obtain credentials from the JSON file.
+	creds, err := google.CredentialsFromJSON(ctx, credentialsJSON, sheets.SpreadsheetsScope)
+	if err != nil {
+		log.Fatalf("Unable to obtain credentials: %v", err)
+	}
+
+	sheetsService, err := sheets.NewService(ctx, option.WithCredentials(creds))
 	if err != nil {
 		log.Fatalf("Unable to create Google Sheets service: %v", err)
 	}
