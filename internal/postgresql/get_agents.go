@@ -40,7 +40,7 @@ func getDomain(db *sql.DB) []DomainForExcel {
 	FROM dbo.agents a
 	JOIN dbo.brands b ON a.brand_id = b.id
 	JOIN dbo.agent_domains bd ON a.id = bd.agent_id
-	JOIN temp_domains td ON bd.domain_name = td.domain_name
+	JOIN temp_domains td ON bd.domain_name = td.name
 	ORDER BY 1,2
 `
 	rows, err := db.Query(query)
