@@ -39,7 +39,7 @@ func CreateExpiredDomainExcel(domains []postgresql.DomainForExcel) {
 }
 
 func writeMessage(composeMessage string, len int, sheet string, sheetsService *sheets.Service, spreadsheetId string) {
-	rangeValue := fmt.Sprintf("%s!A1:E%d", sheet, len+3)
+	rangeValue := fmt.Sprintf("%s!A%d:E%d", sheet, len+3, len+3)
 
 	// Prepare the value range with the message.
 	valueRange := &sheets.ValueRange{
