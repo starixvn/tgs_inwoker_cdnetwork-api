@@ -15,9 +15,26 @@ import (
 )
 
 func CreateExpiredDomainExcel(domains []postgresql.DomainForExcel) {
-
 	config := util.GetConfig()
-	creds, err := ioutil.ReadFile(config.GoogleApiKey)
+	googleApiKey := config.GoogleSheet.GoogleApiKey
+	spreadsheetId := config.GoogleSheet.SheetId
+
+	sheetsService := createSheetsService(googleApiKey)
+	nextMonthYear := createSheet(sheetsService, spreadsheetId)
+	valueRange, valuesCount := createValueRange(domains)
+	writeRange := fmt.Sprintf("%s!A1:E%d", nextMonthYear, valuesCount)
+
+	_, err := sheetsService.Spreadsheets.Values.Update(spreadsheetId, writeRange, valueRange).
+		ValueInputOption("RAW").Do()
+	if err != nil {
+		log.LogFatal(fmt.Sprintf("Unable to write data to sheet: %v", err))
+	}
+
+	fmt.Println("Data successfully written to Google Sheet.")
+}
+
+func createSheetsService(key string) *sheets.Service {
+	creds, err := ioutil.ReadFile(key)
 	if err != nil {
 		log.LogFatal(fmt.Sprintf("Unable to read client secret file: %v", err))
 	}
@@ -27,7 +44,6 @@ func CreateExpiredDomainExcel(domains []postgresql.DomainForExcel) {
 		log.LogFatal(fmt.Sprintf("Unable to parse client secret file to config: %v", err))
 	}
 
-	// Create a new JWT config for authentication.
 	jwtConf := &jwt.Config{
 		Email:      conf.Email,
 		PrivateKey: conf.PrivateKey,
@@ -35,23 +51,22 @@ func CreateExpiredDomainExcel(domains []postgresql.DomainForExcel) {
 		TokenURL:   conf.TokenURL,
 	}
 
-	// Create a new Google Sheets client.
 	client := jwtConf.Client(context.Background())
 
-	// Specify the spreadsheet ID and range.
-	spreadsheetId := "1NkZr5NbB-eykKAySsHfXv3OLUw2_T6zZXukCWdDUkrU"
-
-	///////////////////////////////////////////////
-
-	// Initialize the Sheets service.
 	sheetsService, err := sheets.New(client)
 	if err != nil {
-		log.LogFatal(fmt.Sprint("Unable to retrieve Sheets client: %v", err))
+		log.LogFatal(fmt.Sprintf("Unable to retrieve Sheets client: %v", err))
 	}
+	return sheetsService
+}
 
+func createSheet(sheetsService *sheets.Service, spreadsheetId string) string {
 	nextMonth := time.Now().AddDate(0, 1, 0)
 	nextMonthYear := nextMonth.Format("01/2006") // Format: MM/YYYY
 
+	if checkIfSheetExists(sheetsService, spreadsheetId, nextMonthYear) {
+		return nextMonthYear
+	}
 	// Specify the properties of the new sheet.
 	newSheetProperties := &sheets.SheetProperties{
 		Title: nextMonthYear, // Use the next month/year as the sheet title
@@ -69,16 +84,33 @@ func CreateExpiredDomainExcel(domains []postgresql.DomainForExcel) {
 	}
 
 	// Execute the batch update request to create a new sheet.
-	_, err = sheetsService.Spreadsheets.BatchUpdate(spreadsheetId, batchUpdateRequest).Do()
+	_, err := sheetsService.Spreadsheets.BatchUpdate(spreadsheetId, batchUpdateRequest).Do()
 	if err != nil {
-		log.LogFatal(fmt.Sprint("Unable to create new sheet: %v", err))
+		log.LogFatal(fmt.Sprintf("Unable to create new sheet: %v", err))
 	}
 
 	fmt.Printf("New sheet '%s' created successfully.\n", nextMonthYear)
+	return nextMonthYear
+}
 
-	////////////////////////////////////////////////
+func checkIfSheetExists(sheetsService *sheets.Service, spreadsheetId string, sheetName string) bool {
+	resp, err := sheetsService.Spreadsheets.Get(spreadsheetId).Do()
+	if err != nil {
+		log.LogFatal(fmt.Sprintf("Unable to retrieve spreadsheet: %v", err))
+	}
 
-	// Create the value range to write.
+	// Iterate through the sheets to check if the specified sheet exists.
+	sheetExists := false
+	for _, sheet := range resp.Sheets {
+		if sheet.Properties.Title == sheetName {
+			sheetExists = true
+			break
+		}
+	}
+	return sheetExists
+}
+
+func createValueRange(domains []postgresql.DomainForExcel) (*sheets.ValueRange, int) {
 	values := [][]interface{}{
 		{"Brand", "Agent", "Domain", "Created", "Expired"}, // Example data
 	}
@@ -94,17 +126,7 @@ func CreateExpiredDomainExcel(domains []postgresql.DomainForExcel) {
 		values = append(values, row)
 	}
 
-	valueRange := &sheets.ValueRange{
+	return &sheets.ValueRange{
 		Values: values,
-	}
-
-	writeRange := fmt.Sprintf("%s!A1:E%d", nextMonthYear, len(values))
-
-	_, err = sheetsService.Spreadsheets.Values.Update(spreadsheetId, writeRange, valueRange).
-		ValueInputOption("RAW").Do()
-	if err != nil {
-		log.LogFatal(fmt.Sprintf("Unable to write data to sheet: %v", err))
-	}
-
-	fmt.Println("Data successfully written to Google Sheet.")
+	}, len(values)
 }

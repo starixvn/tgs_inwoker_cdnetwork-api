@@ -9,12 +9,17 @@ import (
 )
 
 type TgsConfig struct {
-	CloudflareToken string           `yaml:"cloudflare_token"`
-	GoogleApiKey    string           `yaml:"google_api_key"`
-	Cdnetwork       CdnConfig        `yaml:"cdnetwork"`
-	Namecheap       NamecheapConfig  `yaml:"namecheap"`
-	Postgresql      PostgresqlConfig `yaml:"postgresql"`
-	Telegram        TelegramConfig   `yaml:"telegram"`
+	CloudflareToken string            `yaml:"cloudflare_token"`
+	GoogleSheet     GoogleSheetConfig `yaml:"google_sheet"`
+	Cdnetwork       CdnConfig         `yaml:"cdnetwork"`
+	Namecheap       NamecheapConfig   `yaml:"namecheap"`
+	Postgresql      PostgresqlConfig  `yaml:"postgresql"`
+	Telegram        TelegramConfig    `yaml:"telegram"`
+}
+
+type GoogleSheetConfig struct {
+	GoogleApiKey string `yaml:"google_api_key"`
+	SheetId      string `yaml:"sheet_id"`
 }
 
 type CdnConfig struct {
