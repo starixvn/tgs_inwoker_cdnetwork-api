@@ -9,57 +9,57 @@ import (
 	"io/ioutil"
 
 	"golang.org/x/oauth2/google"
-	"google.golang.org/api/option"
+	"golang.org/x/oauth2/jwt"
 	"google.golang.org/api/sheets/v4"
 )
 
 func CreateExpiredDomainExcel(domains []postgresql.DomainForExcel) {
 
 	config := util.GetConfig()
-	ctx := context.Background()
-
-	// Read the contents of credentials.json file
-	credentialsJSON, err := ioutil.ReadFile(config.GoogleApiKey)
+	creds, err := ioutil.ReadFile(config.GoogleApiKey)
 	if err != nil {
-		log.LogFatal(fmt.Sprintf("Unable to read credentials file: %v", err))
-	}
-	
-	log.LogInfo(fmt.Sprintf("credentials file: %v", credentialsJSON))
-
-	// Obtain credentials from the JSON file.
-	creds, err := google.CredentialsFromJSON(ctx, credentialsJSON, sheets.SpreadsheetsScope)
-	if err != nil {
-		log.LogFatal(fmt.Sprintf("Unable to obtain credentials: %v", err))
+		log.LogFatal(fmt.Sprintf("Unable to read client secret file: %v", err))
 	}
 
-	sheetsService, err := sheets.NewService(ctx, option.WithCredentials(creds))
+	conf, err := google.JWTConfigFromJSON(creds, sheets.SpreadsheetsScope)
 	if err != nil {
-		log.LogFatal(fmt.Sprintf("Unable to create Google Sheets service: %v", err))
+		log.LogFatal(fmt.Sprintf("Unable to parse client secret file to config: %v", err))
 	}
 
-	// ID of the Google Sheets document.
+	// Create a new JWT config for authentication.
+	jwtConf := &jwt.Config{
+		Email:      conf.Email,
+		PrivateKey: conf.PrivateKey,
+		Scopes:     []string{sheets.SpreadsheetsScope},
+		TokenURL:   conf.TokenURL,
+	}
+
+	// Create a new Google Sheets client.
+	client := jwtConf.Client(context.Background())
+
+	// Specify the spreadsheet ID and range.
 	spreadsheetId := "1NkZr5NbB-eykKAySsHfXv3OLUw2_T6zZXukCWdDUkrU"
-
-	// Range where you want to write data.
 	writeRange := "Sheet1!A1"
 
-	// Data to be written to the sheet.
+	// Create the value range to write.
 	values := [][]interface{}{
-		{"Data1", "Data2", "Data3"},
+		{"Data1", "Data2", "Data3"}, // Example data
 	}
-
-	// Create the value range object.
-	valueRange := sheets.ValueRange{
+	valueRange := &sheets.ValueRange{
 		Values: values,
 	}
 
-	// Write data to the Google Sheets document.
-	_, err = sheetsService.Spreadsheets.Values.Update(spreadsheetId, writeRange, &valueRange).
-		ValueInputOption("RAW").
-		Do()
+	// Call the Sheets API to write data.
+	sheetsService, err := sheets.New(client)
+	if err != nil {
+		log.LogFatal(fmt.Sprintf("Unable to retrieve Sheets client: %v", err))
+	}
+
+	_, err = sheetsService.Spreadsheets.Values.Update(spreadsheetId, writeRange, valueRange).
+		ValueInputOption("RAW").Do()
 	if err != nil {
 		log.LogFatal(fmt.Sprintf("Unable to write data to sheet: %v", err))
 	}
 
-	fmt.Println("Data added successfully!")
+	fmt.Println("Data successfully written to Google Sheet.")
 }
