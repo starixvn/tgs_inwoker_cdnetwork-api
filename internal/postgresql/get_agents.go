@@ -27,8 +27,6 @@ func GetAgents(domains []namecheap.FilteredDomain) []DomainForExcel {
 	}
 
 	defer db.Close()
-
-	fmt.Println("start create temp table")
 	createTempTable(db, domains)
 	domainsForExcel := getDomain(db)
 	deleteTempTable(db)
@@ -86,6 +84,7 @@ func getDomain(db *sql.DB) []DomainForExcel {
 }
 
 func createTempTable(db *sql.DB, domains []namecheap.FilteredDomain) {
+	fmt.Println("start create temp table")
 	createTempSql := `
 	CREATE TEMPORARY TABLE temp_domains (
 		name VARCHAR(255),
@@ -101,7 +100,7 @@ func createTempTable(db *sql.DB, domains []namecheap.FilteredDomain) {
 
 	// Insert domain data into the temporary table
 	for _, domain := range domains {
-		_, err := db.Exec(`INSERT INTO temp_domains VALUES ('$1','$2','$3')`, domain.Name, domain.Created, domain.Expires)
+		_, err := db.Exec(`INSERT INTO temp_domains VALUES (?, ?, ?)`, domain.Name, domain.Created, domain.Expires)
 		if err != nil {
 			log.LogFatal(err.Error())
 			panic(err)
@@ -110,6 +109,7 @@ func createTempTable(db *sql.DB, domains []namecheap.FilteredDomain) {
 }
 
 func deleteTempTable(db *sql.DB) {
+	fmt.Println("drop temp table")
 	sql := `DROP TABLE temp_domains;`
 	_, err := db.Exec(sql)
 	if err != nil {
