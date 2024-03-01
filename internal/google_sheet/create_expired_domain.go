@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"time"
 
 	"golang.org/x/oauth2/google"
 	"golang.org/x/oauth2/jwt"
@@ -39,7 +40,43 @@ func CreateExpiredDomainExcel(domains []postgresql.DomainForExcel) {
 
 	// Specify the spreadsheet ID and range.
 	spreadsheetId := "1NkZr5NbB-eykKAySsHfXv3OLUw2_T6zZXukCWdDUkrU"
-	writeRange := "Sheet1!A1"
+
+	///////////////////////////////////////////////
+
+	// Initialize the Sheets service.
+	sheetsService, err := sheets.New(client)
+	if err != nil {
+		log.LogFatal(fmt.Sprint("Unable to retrieve Sheets client: %v", err))
+	}
+
+	nextMonth := time.Now().AddDate(0, 1, 0)
+	nextMonthYear := nextMonth.Format("01/2006") // Format: MM/YYYY
+
+	// Specify the properties of the new sheet.
+	newSheetProperties := &sheets.SheetProperties{
+		Title: nextMonthYear, // Use the next month/year as the sheet title
+	}
+
+	// Create a batch update request to add a new sheet.
+	batchUpdateRequest := &sheets.BatchUpdateSpreadsheetRequest{
+		Requests: []*sheets.Request{
+			{
+				AddSheet: &sheets.AddSheetRequest{
+					Properties: newSheetProperties,
+				},
+			},
+		},
+	}
+
+	// Execute the batch update request to create a new sheet.
+	_, err = sheetsService.Spreadsheets.BatchUpdate(spreadsheetId, batchUpdateRequest).Do()
+	if err != nil {
+		log.LogFatal(fmt.Sprint("Unable to create new sheet: %v", err))
+	}
+
+	fmt.Printf("New sheet '%s' created successfully.\n", nextMonthYear)
+
+	////////////////////////////////////////////////
 
 	// Create the value range to write.
 	values := [][]interface{}{
@@ -57,24 +94,11 @@ func CreateExpiredDomainExcel(domains []postgresql.DomainForExcel) {
 		values = append(values, row)
 	}
 
-	for rowIndex, row := range values {
-		// Iterate over each row
-		for colIndex, cell := range row {
-			// Iterate over each cell in the row
-			fmt.Printf("Row %d, Column %d: %v\n", rowIndex+1, colIndex+1, cell)
-			// You can perform operations with the cell data here
-		}
-	}
-
 	valueRange := &sheets.ValueRange{
 		Values: values,
 	}
 
-	// Call the Sheets API to write data.
-	sheetsService, err := sheets.New(client)
-	if err != nil {
-		log.LogFatal(fmt.Sprintf("Unable to retrieve Sheets client: %v", err))
-	}
+	writeRange := fmt.Sprintf("%s!A1:E%d", nextMonthYear, len(values))
 
 	_, err = sheetsService.Spreadsheets.Values.Update(spreadsheetId, writeRange, valueRange).
 		ValueInputOption("RAW").Do()
