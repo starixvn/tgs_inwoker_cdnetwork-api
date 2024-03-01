@@ -1,51 +1,119 @@
 package postgresql
 
 import (
+	"cdnetwork/internal/namecheap"
+	"cdnetwork/pkg/log"
 	"cdnetwork/pkg/util"
+	"database/sql"
 	"fmt"
 
-	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 )
 
-func GetAgents() {
+type DomainForExcel struct {
+	Brand   string
+	Agent   string
+	Domain  string
+	Created string
+	Expires string
+}
+
+func GetAgents(domains []namecheap.FilteredDomain) []DomainForExcel {
 	config := util.GetConfig()
-	dbaccess, err := NewDataAccessLayer2(config)
+	db, err := NewDataAccessLayer(config)
 
 	if err != nil {
 		panic(err)
 	}
-	// defer dbaccess.Listener.Close()
-	// defer dbaccess.SshClient.Close()
-	defer dbaccess.Db.Close()
 
+	defer db.Close()
+
+	fmt.Println("start create temp table")
+	createTempTable(db, domains)
+	domainsForExcel := getDomain(db)
+	deleteTempTable(db)
+	return domainsForExcel
+}
+
+func getDomain(db *sql.DB) []DomainForExcel {
+
+	query := `
+	SELECT b.code, a.username, td.name, td.created, td.expires
+	FROM dbo.agents a
+	JOIN dbo.brands b ON a.brand_id = b.id
+	JOIN dbo.agent_domains bd ON a.id = bd.agent_id
+	JOIN temp_domains td ON bd.domain_name = td.domain_name
+	ORDER BY 1,2
+`
+	rows, err := db.Query(query)
 	fmt.Println("start query")
-
-	rows, err := dbaccess.Db.Query("SELECT id, username FROM dbo.agents")
-	fmt.Println("start row")
 
 	if err != nil {
 		panic(err)
 	}
 	defer rows.Close()
 
-	fmt.Println("end query")
-
+	var result []DomainForExcel
 	for rows.Next() {
 		var (
-			id       uuid.UUID
+			code     string
 			username string
+			name     string
+			created  string
+			expires  string
 		)
 		// Scan the values from the row into variables
-		err := rows.Scan(&id, &username)
+		err := rows.Scan(&code, &username, &name, &created, &expires)
 		if err != nil {
 			panic(err)
 		}
 		// Print the values
-		fmt.Printf("ID: %d, Domain: %s\n", id, username)
+		fmt.Printf("brand: %d, agent: %s, domain: %s, created: %s, expired: %s\n", code, username, name, created, expires)
+		result = append(result, DomainForExcel{
+			Brand:   code,
+			Agent:   username,
+			Domain:  name,
+			Created: created,
+			Expires: expires,
+		})
 	}
 	// Check for errors from iterating over rows
 	if err = rows.Err(); err != nil {
+		log.LogFatal("get domains: " + err.Error())
+		panic(err)
+	}
+	return result
+}
+
+func createTempTable(db *sql.DB, domains []namecheap.FilteredDomain) {
+	createTempSql := `
+	CREATE TEMPORARY TABLE temp_domains (
+		name VARCHAR(255),
+		created VARCHAR(255),
+		expires VARCHAR(255)
+	);
+	`
+	_, err := db.Exec(createTempSql)
+	if err != nil {
+		log.LogFatal(err.Error())
+		panic(err)
+	}
+
+	// Insert domain data into the temporary table
+	for _, domain := range domains {
+		_, err := db.Exec(`INSERT INTO temp_domains VALUES ('$1','$2','$3')`, domain.Name, domain.Created, domain.Expires)
+		if err != nil {
+			log.LogFatal(err.Error())
+			panic(err)
+		}
+	}
+}
+
+func deleteTempTable(db *sql.DB) {
+	sql := `DROP TABLE temp_domains;`
+	_, err := db.Exec(sql)
+	if err != nil {
+		log.LogFatal(err.Error())
 		panic(err)
 	}
 }

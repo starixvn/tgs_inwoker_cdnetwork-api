@@ -52,7 +52,13 @@ type Domain struct {
 	IsOurDNS   string `xml:"IsOurDNS,attr"`
 }
 
-func GetExpiredDomains() []Domain {
+type FilteredDomain struct {
+	Name    string `xml:"Name,attr"`
+	Created string `xml:"Created,attr"`
+	Expires string `xml:"Expires,attr"`
+}
+
+func GetExpiredDomains() []FilteredDomain {
 	config := util.GetConfig()
 	userName := config.Namecheap.NamecheapUsername
 	apiKey := config.Namecheap.NamecheapApiKey
@@ -80,12 +86,12 @@ func GetExpiredDomains() []Domain {
 	return filterDomainsWithExpired(domains)
 }
 
-func filterDomainsWithExpired(domains []Domain) []Domain {
+func filterDomainsWithExpired(domains []Domain) []FilteredDomain {
 	currentDate := time.Now()
 	nextMonth := currentDate.AddDate(0, 1, 0)
 	firstDayOfNextMonth := time.Date(nextMonth.Year(), nextMonth.Month(), 1, 0, 0, 0, 0, nextMonth.Location())
 	lastDayOfNextMonth := firstDayOfNextMonth.AddDate(0, 1, -1)
-	var result []Domain
+	var result []FilteredDomain
 	for _, domain := range domains {
 		expireDate, err := parseDate(domain.Expires)
 		if err != nil {
@@ -93,12 +99,16 @@ func filterDomainsWithExpired(domains []Domain) []Domain {
 			continue
 		}
 		if isBetweenDates(expireDate, firstDayOfNextMonth, lastDayOfNextMonth) {
-			result = append(result, domain)
+			result = append(result, FilteredDomain{
+				Name:    domain.Name,
+				Created: domain.Created,
+				Expires: domain.Expires,
+			})
 		}
 	}
 
 	for i, domain := range result {
-		fmt.Printf("%d, Domain ID: %s, Name: %s, User: %s, Created: %s, Expires: %s\n", i+1, domain.ID, domain.Name, domain.User, domain.Created, domain.Expires)
+		fmt.Printf("%d, Name: %s, Created: %s, Expires: %s\n", i+1, domain.Name, domain.Created, domain.Expires)
 	}
 	return result
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"cdnetwork/internal/cli"
+	"cdnetwork/internal/namecheap"
 	"cdnetwork/internal/postgresql"
 	"cdnetwork/pkg/log"
 	"fmt"
@@ -11,10 +12,11 @@ import (
 
 func main() {
 
-	postgresql.GetAgents()
+	domains := namecheap.GetExpiredDomains()
+	domainsForExcel := postgresql.GetAgents(domains)
+	fmt.Println("domain's length:", len(domainsForExcel))
 
 	//cloudflare.GetDnsInfo("autotest1.rpgp.cc")
-	//domains := namecheap.GetExpiredDomains()
 
 	// var rootCmd = &cobra.Command{
 	// 	Use:   "cdnctl",
