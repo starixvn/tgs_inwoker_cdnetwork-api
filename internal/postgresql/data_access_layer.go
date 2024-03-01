@@ -8,7 +8,7 @@ import (
 )
 
 func NewDataAccessLayer(config util.TgsConfig) (*sql.DB, error) {
-	connStr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=prefer",
+	connStr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable",
 		config.Postgresql.PgUsername,
 		config.Postgresql.PgPassword,
 		config.Postgresql.PgHost,
