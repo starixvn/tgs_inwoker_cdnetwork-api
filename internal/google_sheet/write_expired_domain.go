@@ -43,8 +43,20 @@ func CreateExpiredDomainExcel(domains []postgresql.DomainForExcel) {
 
 	// Create the value range to write.
 	values := [][]interface{}{
-		{"Data1", "Data2", "Data3"}, // Example data
+		{"Brand", "Agent", "Domain", "Created", "Expired"}, // Example data
 	}
+
+	for _, domain := range domains {
+		row := []interface{}{
+			domain.Brand,
+			domain.Agent,
+			domain.Domain,
+			domain.Created,
+			domain.Expires,
+		}
+		values = append(values, row)
+	}
+
 	valueRange := &sheets.ValueRange{
 		Values: values,
 	}
