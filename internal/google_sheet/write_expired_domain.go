@@ -57,6 +57,15 @@ func CreateExpiredDomainExcel(domains []postgresql.DomainForExcel) {
 		values = append(values, row)
 	}
 
+	for rowIndex, row := range values {
+		// Iterate over each row
+		for colIndex, cell := range row {
+			// Iterate over each cell in the row
+			fmt.Printf("Row %d, Column %d: %v\n", rowIndex+1, colIndex+1, cell)
+			// You can perform operations with the cell data here
+		}
+	}
+
 	valueRange := &sheets.ValueRange{
 		Values: values,
 	}
