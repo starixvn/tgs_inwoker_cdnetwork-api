@@ -100,7 +100,7 @@ func createTempTable(db *sql.DB, domains []namecheap.FilteredDomain) {
 
 	// Insert domain data into the temporary table
 	for _, domain := range domains {
-		_, err := db.Exec(`INSERT INTO temp_domains VALUES (?, ?, ?)`, domain.Name, domain.Created, domain.Expires)
+		_, err := db.Exec(`INSERT INTO temp_domains VALUES (?, ?, ?);`, domain.Name, domain.Created, domain.Expires)
 		if err != nil {
 			log.LogFatal(err.Error())
 			panic(err)
