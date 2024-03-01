@@ -2,8 +2,7 @@ package main
 
 import (
 	"cdnetwork/internal/cli"
-	"cdnetwork/internal/namecheap"
-	"cdnetwork/internal/postgresql"
+	"cdnetwork/internal/google_sheet"
 	"cdnetwork/pkg/log"
 	"fmt"
 
@@ -12,9 +11,11 @@ import (
 
 func main() {
 
-	domains := namecheap.GetExpiredDomains()
-	domainsForExcel := postgresql.GetAgents(domains)
-	fmt.Println("domain's length:", len(domainsForExcel))
+	// domains := namecheap.GetExpiredDomains()
+	// domainsForExcel := postgresql.GetAgents(domains)
+	// fmt.Println("domain's length:", len(domainsForExcel))
+
+	google_sheet.CreateExpiredDomainExcel(nil)
 
 	//cloudflare.GetDnsInfo("autotest1.rpgp.cc")
 

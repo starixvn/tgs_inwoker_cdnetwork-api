@@ -10,9 +10,9 @@ import (
 
 type TgsConfig struct {
 	CloudflareToken string           `yaml:"cloudflare_token"`
+	GoogleApiKey    string           `yaml:"google_api_key"`
 	Cdnetwork       CdnConfig        `yaml:"cdnetwork"`
 	Namecheap       NamecheapConfig  `yaml:"namecheap"`
-	SshTunnel       SshTunnelConfig  `yaml:"ssh_tunnel"`
 	Postgresql      PostgresqlConfig `yaml:"postgresql"`
 	Telegram        TelegramConfig   `yaml:"telegram"`
 }
@@ -32,13 +32,6 @@ type NamecheapConfig struct {
 	NamecheapApiKey   string `yaml:"namecheap_api_key"`
 	NamecheapUsername string `yaml:"namecheap_username"`
 	NamecheapClientIp string `yaml:"namecheap_client_ip"`
-}
-
-type SshTunnelConfig struct {
-	SshHost    string `yaml:"ssh_host"`
-	SshUser    string `yaml:"ssh_user"`
-	SshPort    string `yaml:"ssh_port"`
-	SshKeyFile string `yaml:"ssh_key_file"`
 }
 
 type PostgresqlConfig struct {
