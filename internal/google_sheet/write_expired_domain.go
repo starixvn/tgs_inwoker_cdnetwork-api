@@ -16,7 +16,6 @@ import (
 func CreateExpiredDomainExcel(domains []postgresql.DomainForExcel) {
 
 	config := util.GetConfig()
-
 	ctx := context.Background()
 
 	// Read the contents of credentials.json file
@@ -24,6 +23,8 @@ func CreateExpiredDomainExcel(domains []postgresql.DomainForExcel) {
 	if err != nil {
 		log.LogFatal(fmt.Sprintf("Unable to read credentials file: %v", err))
 	}
+	
+	log.LogInfo(fmt.Sprintf("credentials file: %v", credentialsJSON))
 
 	// Obtain credentials from the JSON file.
 	creds, err := google.CredentialsFromJSON(ctx, credentialsJSON, sheets.SpreadsheetsScope)
