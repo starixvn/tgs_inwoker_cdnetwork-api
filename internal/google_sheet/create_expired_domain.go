@@ -58,9 +58,9 @@ func writeMessage(composeMessage string, len int, sheet string, sheetsService *s
 func createMessage(domains []postgresql.DomainForExcel) string {
 	expirationDate := getResponseDate() + "(五)"
 
-	var domainNames []string
-	mapFunc := func(domain postgresql.DomainForExcel) string { return domain.Domain }
-	domainNames = mapStrings(domains, mapFunc)
+	domainNames := mapStrings(domains, func(domain postgresql.DomainForExcel) string {
+		return domain.Domain
+	})
 
 	// Prepare data to be passed to the template
 	data := struct {
@@ -79,7 +79,7 @@ func createMessage(domains []postgresql.DomainForExcel) string {
 {{- end }}
 	`
 
-	tmpl, err := template.New("email").Parse(msgTemplate)
+	tmpl, err := template.New("message").Parse(msgTemplate)
 	if err != nil {
 		log.LogFatal(fmt.Sprintf("Error parsing message template: %v", err))
 	}
@@ -89,7 +89,6 @@ func createMessage(domains []postgresql.DomainForExcel) string {
 		log.LogFatal(fmt.Sprintf("Error executing template: %v", err))
 	}
 
-	// Print or send the message
 	return buf.String()
 }
 
@@ -135,12 +134,11 @@ func createSheet(sheetsService *sheets.Service, spreadsheetId string) string {
 	if checkIfSheetExists(sheetsService, spreadsheetId, nextMonthYear) {
 		return nextMonthYear
 	}
-	// Specify the properties of the new sheet.
+
 	newSheetProperties := &sheets.SheetProperties{
-		Title: nextMonthYear, // Use the next month/year as the sheet title
+		Title: nextMonthYear,
 	}
 
-	// Create a batch update request to add a new sheet.
 	batchUpdateRequest := &sheets.BatchUpdateSpreadsheetRequest{
 		Requests: []*sheets.Request{
 			{
@@ -151,7 +149,6 @@ func createSheet(sheetsService *sheets.Service, spreadsheetId string) string {
 		},
 	}
 
-	// Execute the batch update request to create a new sheet.
 	_, err := sheetsService.Spreadsheets.BatchUpdate(spreadsheetId, batchUpdateRequest).Do()
 	if err != nil {
 		log.LogFatal(fmt.Sprintf("Unable to create new sheet: %v", err))
@@ -167,20 +164,17 @@ func checkIfSheetExists(sheetsService *sheets.Service, spreadsheetId string, she
 		log.LogFatal(fmt.Sprintf("Unable to retrieve spreadsheet: %v", err))
 	}
 
-	// Iterate through the sheets to check if the specified sheet exists.
-	sheetExists := false
 	for _, sheet := range resp.Sheets {
 		if sheet.Properties.Title == sheetName {
-			sheetExists = true
-			break
+			return true
 		}
 	}
-	return sheetExists
+	return false
 }
 
 func createValueRange(domains []postgresql.DomainForExcel) (*sheets.ValueRange, int) {
 	values := [][]interface{}{
-		{"Brand", "Agent", "Domain", "Created", "Expired"}, // Example data
+		{"Brand", "Agent", "Domain", "Created", "Expired"},
 	}
 
 	for _, domain := range domains {
@@ -199,9 +193,9 @@ func createValueRange(domains []postgresql.DomainForExcel) (*sheets.ValueRange, 
 	}, len(values)
 }
 
-func getResponseDate() string {
+func getLastFridayOfMonth(now time.Time) time.Time {
 	// Get the first day of the next month
-	firstDayOfNextMonth := time.Now().AddDate(0, 1, 0)
+	firstDayOfNextMonth := now.AddDate(0, 1, 0)
 	firstDayOfNextMonth = time.Date(firstDayOfNextMonth.Year(), firstDayOfNextMonth.Month(), 1, 0, 0, 0, 0, time.Local)
 
 	// Subtract one day to get the last day of the current month
@@ -217,9 +211,12 @@ func getResponseDate() string {
 	}
 
 	// Subtract the appropriate number of days to find the last Friday
-	lastFridayOfMonth := lastDayOfCurrentMonth.Add(-time.Duration(daysToSubtract) * 24 * time.Hour)
+	return lastDayOfCurrentMonth.Add(-time.Duration(daysToSubtract) * 24 * time.Hour)
+}
 
-	// Format the last Friday as {month/day}
+func getResponseDate() string {
+	lastFridayOfMonth := getLastFridayOfMonth(time.Now())
+
 	formattedLastFriday := lastFridayOfMonth.Format("01/02")
 
 	fmt.Println("Last Friday of the month (formatted as {month/day}):", formattedLastFriday)
