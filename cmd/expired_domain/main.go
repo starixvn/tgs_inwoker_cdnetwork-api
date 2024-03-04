@@ -1,9 +1,9 @@
 package main
 
 import (
-	"cdnetwork/internal/google_sheet"
-	"cdnetwork/internal/namecheap"
-	"cdnetwork/internal/postgresql"
+	"cdnetwork/pkg/google_sheet"
+	"cdnetwork/pkg/namecheap"
+	"cdnetwork/pkg/postgresql"
 )
 
 func main() {

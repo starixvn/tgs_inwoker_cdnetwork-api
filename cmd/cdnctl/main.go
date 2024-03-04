@@ -1,9 +1,9 @@
 package main
 
 import (
-	"cdnetwork/internal/cli"
-	"cdnetwork/internal/google_sheet"
-	"cdnetwork/pkg/log"
+	"cdnetwork/internal/log"
+	"cdnetwork/pkg/cli"
+	"cdnetwork/pkg/google_sheet"
 	"fmt"
 
 	"github.com/spf13/cobra"

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"cdnetwork/pkg/util"
+	"cdnetwork/internal/util"
 	"encoding/json"
 	"fmt"
 	"log"
