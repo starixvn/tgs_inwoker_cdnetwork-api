@@ -43,7 +43,6 @@ func (s *GetAgentService) GetAgentDomains(domains []namecheap.FilteredDomain) ([
 
 	createTempTable(s.Db, domains)
 	defer deleteTempTable(s.Db)
-	defer s.Db.Close()
 
 	query := `
 	SELECT b.code, a.username, td.name, td.created, td.expires
@@ -135,4 +134,5 @@ func deleteTempTable(db *sql.DB) {
 		log.LogFatal(err.Error())
 		panic(err)
 	}
+	defer db.Close()
 }
