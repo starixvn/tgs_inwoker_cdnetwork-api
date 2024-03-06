@@ -44,7 +44,9 @@ func (gs *GoogleSheetService) CreateExpiredDomainExcel(domains []postgresql.Doma
 			return fmt.Sprintf("%s!A1:F%d", sheetName, len(domains)+1)
 		},
 		func(domains []postgresql.DomainForExcel) *sheets.ValueRange {
-			return createValueRangeForDomain(domains)
+			valueRange := createValueRangeForDomain(domains)
+			PlaceTextCenter(gs, sheetName, valueRange.Values)
+			return valueRange
 		},
 	)
 	fmt.Println("3")
@@ -63,6 +65,43 @@ func (gs *GoogleSheetService) CreateExpiredDomainExcel(domains []postgresql.Doma
 	fmt.Println("Data successfully written to Google Sheet.")
 }
 
+func PlaceTextCenter(gs *GoogleSheetService, title string, values [][]interface{}) {
+	sheetId, err := getSheetID(gs.Service, gs.SpreadsheetId, title)
+
+	if err != nil {
+		log.LogFatal(fmt.Sprintf("Fail to get sheet id: %v", err))
+	}
+
+	requests := []*sheets.Request{
+		{
+			RepeatCell: &sheets.RepeatCellRequest{
+				Range: &sheets.GridRange{
+					SheetId:          sheetId,               // Provide the sheet ID here
+					StartRowIndex:    0,                     // Start from the first row (header row)
+					EndRowIndex:      int64(len(values)),    // End at the last row
+					StartColumnIndex: 0,                     // Start from the first column
+					EndColumnIndex:   int64(len(values[0])), // End at the last column
+				},
+				Cell: &sheets.CellData{
+					UserEnteredFormat: &sheets.CellFormat{
+						HorizontalAlignment: "CENTER",
+					},
+				},
+				Fields: "userEnteredFormat.horizontalAlignment", // Specify the field to update
+			},
+		},
+	}
+
+	batchUpdate := &sheets.BatchUpdateSpreadsheetRequest{
+		Requests: requests,
+	}
+
+	_, err = gs.Service.Spreadsheets.BatchUpdate(gs.SpreadsheetId, batchUpdate).Do()
+	if err != nil {
+		log.LogFatal(fmt.Sprintf("Unable to set alignment: %v", err))
+	}
+}
+
 func (gs *GoogleSheetService) writeData(
 	spreadsheetId string,
 	domains []postgresql.DomainForExcel,
@@ -71,6 +110,7 @@ func (gs *GoogleSheetService) writeData(
 
 	valueRange := valueRangeFunc(domains)
 	writeRange := writeRangeFunc()
+
 	_, err := gs.Service.Spreadsheets.Values.Update(spreadsheetId, writeRange, valueRange).
 		ValueInputOption("RAW").Do()
 	if err != nil {
@@ -264,4 +304,27 @@ func getResponseDate() string {
 
 	fmt.Println("Last Friday of the month (formatted as {month/day}):", formattedLastFriday)
 	return formattedLastFriday
+}
+
+func getSheetID(srv *sheets.Service, spreadsheetID string, sheetTitle string) (int64, error) {
+	// Retrieve the spreadsheet
+	spreadsheet, err := srv.Spreadsheets.Get(spreadsheetID).Do()
+	if err != nil {
+		return 0, err
+	}
+
+	// Search for the sheet by title
+	var sheetID int64
+	for _, sheet := range spreadsheet.Sheets {
+		if sheet.Properties.Title == sheetTitle {
+			sheetID = sheet.Properties.SheetId
+			break
+		}
+	}
+
+	if sheetID == 0 {
+		return 0, fmt.Errorf("Sheet with title '%s' not found", sheetTitle)
+	}
+
+	return sheetID, nil
 }
