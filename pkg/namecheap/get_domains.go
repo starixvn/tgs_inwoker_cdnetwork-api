@@ -12,8 +12,11 @@ import (
 )
 
 const (
-	apiUrl  = "https://api.namecheap.com/xml.response"
-	command = "namecheap.domains.getList"
+	apiUrl     = "https://api.namecheap.com/xml.response"
+	command    = "namecheap.domains.getList"
+	pageSize   = 100
+	maxPages   = 5
+	dateFormat = "01/02/2006"
 )
 
 type DomainGetListResult struct {
@@ -58,20 +61,36 @@ type FilteredDomain struct {
 	Expires string `xml:"Expires,attr"`
 }
 
-func GetExpiredDomains() []FilteredDomain {
-	config := util.GetConfig()
-	userName := config.Namecheap.NamecheapUsername
-	apiKey := config.Namecheap.NamecheapApiKey
-	clinetIp := config.Namecheap.NamecheapClientIp
-	pageSize := 100
+type NamecheapAPI interface {
+	GetExpiredDomains() ([]FilteredDomain, error)
+}
+
+type NamecheapClient struct {
+	Config util.NamecheapConfig
+}
+
+func New(config util.NamecheapConfig) NamecheapAPI {
+	return &NamecheapClient{
+		Config: config,
+	}
+}
+
+func (nc *NamecheapClient) GetExpiredDomains() ([]FilteredDomain, error) {
+	userName := nc.Config.NamecheapUsername
+	apiKey := nc.Config.NamecheapApiKey
+	clinetIp := nc.Config.NamecheapClientIp
 
 	url := fmt.Sprintf("%s?ApiUser=%s&ApiKey=%s&UserName=%s&Command=%s&ClientIp=%s&PageSize=%d&Page=", apiUrl, userName, apiKey, userName, command, clinetIp, pageSize)
 
 	var domains []Domain
 	index := 1
-	for index < 5 {
+	for index < maxPages {
 		fmt.Println(index)
-		_domains, totolCount, shouldReturn := getDomains(url, index)
+		_domains, totolCount, shouldReturn, err := getDomains(url, index)
+
+		if err != nil {
+			return nil, err
+		}
 		if !shouldReturn {
 			domains = append(domains, _domains...)
 		}
@@ -83,22 +102,21 @@ func GetExpiredDomains() []FilteredDomain {
 		}
 	}
 
-	return filterDomainsWithExpired(domains)
+	return filterDomainsWithExpired(domains), nil
 }
 
 func filterDomainsWithExpired(domains []Domain) []FilteredDomain {
 	currentDate := time.Now()
-	nextMonth := currentDate.AddDate(0, 1, 0)
-	firstDayOfNextMonth := time.Date(nextMonth.Year(), nextMonth.Month(), 1, 0, 0, 0, 0, nextMonth.Location())
-	lastDayOfNextMonth := firstDayOfNextMonth.AddDate(0, 1, -1)
+	next30Days := currentDate.AddDate(0, 0, 30)
 	var result []FilteredDomain
 	for _, domain := range domains {
-		expireDate, err := parseDate(domain.Expires)
+		expireDate, err := time.Parse(dateFormat, domain.Expires)
 		if err != nil {
 			fmt.Println("Error parsing expiration date:", err)
 			continue
 		}
-		if isBetweenDates(expireDate, firstDayOfNextMonth, lastDayOfNextMonth) {
+
+		if expireDate.After(currentDate) && expireDate.Before(next30Days) {
 			result = append(result, FilteredDomain{
 				Name:    domain.Name,
 				Created: domain.Created,
@@ -113,37 +131,28 @@ func filterDomainsWithExpired(domains []Domain) []FilteredDomain {
 	return result
 }
 
-func parseDate(dateStr string) (time.Time, error) {
-	// Assuming dateStr is in the format MM/DD/YYYY
-	return time.Parse("01/02/2006", dateStr)
-}
-
-func isBetweenDates(date time.Time, start time.Time, end time.Time) bool {
-	return date.After(start) && date.Before(end)
-}
-func getDomains(url string, index int) ([]Domain, int, bool) {
-
+func getDomains(url string, index int) ([]Domain, int, bool, error) {
 	url = url + strconv.Itoa(index)
 	fmt.Println("url:", url)
 
 	response, err := http.Get(url)
 	if err != nil {
 		fmt.Println("Error fetching domain list:", err)
-		return []Domain{}, -1, true
+		return []Domain{}, -1, true, err
 	}
 	defer response.Body.Close()
 
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		fmt.Println("Error reading response body:", err)
-		return []Domain{}, -1, true
+		return []Domain{}, -1, true, err
 	}
 
 	log.LogInfo(string(body))
 	var apiResponse ApiResponse
 	if err := xml.Unmarshal(body, &apiResponse); err != nil {
 		fmt.Println("Error unmarshalling XML:", err)
-		return []Domain{}, -1, true
+		return []Domain{}, -1, true, err
 	}
-	return apiResponse.CommandResponse.DomainGetListResult.Domains, apiResponse.CommandResponse.Paging.TotalItems, false
+	return apiResponse.CommandResponse.DomainGetListResult.Domains, apiResponse.CommandResponse.Paging.TotalItems, false, nil
 }

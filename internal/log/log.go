@@ -1,6 +1,7 @@
 package log
 
 import (
+	"fmt"
 	"os"
 
 	log "github.com/sirupsen/logrus"
@@ -22,17 +23,21 @@ func init() {
 }
 
 func LogInfo(msg string) {
+	fmt.Println("Info", msg)
 	log.Info(msg)
 }
 
 func LogTrace(msg string) {
+	fmt.Println("Trace", msg)
 	log.Trace(msg)
 }
 
 func LogError(msg string) {
+	fmt.Println("Error", msg)
 	log.Error(msg)
 }
 
 func LogFatal(msg string) {
+	fmt.Println("Fatal", msg)
 	log.Fatal(msg)
 }

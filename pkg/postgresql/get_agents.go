@@ -18,22 +18,28 @@ type DomainForExcel struct {
 	Expires string
 }
 
-func GetAgents(domains []namecheap.FilteredDomain) []DomainForExcel {
-	config := util.GetConfig()
+type GetAgentServiceInterface interface {
+	GetAgentDomains(domains []namecheap.FilteredDomain) ([]DomainForExcel, error)
+}
+
+type GetAgentService struct {
+	Db     *sql.DB
+	Config util.PostgresqlConfig
+}
+
+func New(config util.PostgresqlConfig) GetAgentServiceInterface {
 	db, err := NewDataAccessLayer(config)
 
 	if err != nil {
 		panic(err)
 	}
-
-	defer db.Close()
-	createTempTable(db, domains)
-	domainsForExcel := getDomain(db)
-	deleteTempTable(db)
-	return domainsForExcel
+	return &GetAgentService{
+		Db:     db,
+		Config: config,
+	}
 }
 
-func getDomain(db *sql.DB) []DomainForExcel {
+func (s *GetAgentService) GetAgentDomains(domains []namecheap.FilteredDomain) ([]DomainForExcel, error) {
 
 	query := `
 	SELECT b.code, a.username, td.name, td.created, td.expires
@@ -43,11 +49,12 @@ func getDomain(db *sql.DB) []DomainForExcel {
 	JOIN temp_domains td ON bd.domain_name = td.name
 	ORDER BY 1,2
 `
-	rows, err := db.Query(query)
+	rows, err := s.Db.Query(query)
 	fmt.Println("start query")
 
 	if err != nil {
-		panic(err)
+		//panic(err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -63,7 +70,8 @@ func getDomain(db *sql.DB) []DomainForExcel {
 		// Scan the values from the row into variables
 		err := rows.Scan(&code, &username, &name, &created, &expires)
 		if err != nil {
-			panic(err)
+			//panic(err)
+			return nil, err
 		}
 		// Print the values
 		fmt.Printf("brand: %s, agent: %s, domain: %s, created: %s, expired: %s\n", code, username, name, created, expires)
@@ -79,9 +87,10 @@ func getDomain(db *sql.DB) []DomainForExcel {
 	// Check for errors from iterating over rows
 	if err = rows.Err(); err != nil {
 		log.LogFatal("get domains: " + err.Error())
-		panic(err)
+		//panic(err)
+		return nil, err
 	}
-	return result
+	return result, nil
 }
 
 func createTempTable(db *sql.DB, domains []namecheap.FilteredDomain) {

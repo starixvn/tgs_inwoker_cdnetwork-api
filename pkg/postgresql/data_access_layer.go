@@ -7,19 +7,21 @@ import (
 	"fmt"
 )
 
-func NewDataAccessLayer(config util.TgsConfig) (*sql.DB, error) {
+func NewDataAccessLayer(config util.PostgresqlConfig) (*sql.DB, error) {
 	connStr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable",
-		config.Postgresql.PgUsername,
-		config.Postgresql.PgPassword,
-		config.Postgresql.PgHost,
-		config.Postgresql.PgDb,
+		config.PgUsername,
+		config.PgPassword,
+		config.PgHost,
+		config.PgDb,
 	)
 
 	log.LogInfo("conn:" + connStr)
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		log.LogFatal(fmt.Sprintf("Failed to connect to database: %v", err))
+		messgae := fmt.Sprintf("Failed to connect to database: %v", err)
+		log.LogFatal(messgae)
+		fmt.Println(messgae)
 		panic(err)
 	}
 

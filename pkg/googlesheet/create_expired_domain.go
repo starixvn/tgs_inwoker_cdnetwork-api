@@ -1,4 +1,4 @@
-package google_sheet
+package googlesheet
 
 import (
 	"bytes"
@@ -16,46 +16,93 @@ import (
 	"google.golang.org/api/sheets/v4"
 )
 
-func CreateExpiredDomainExcel(domains []postgresql.DomainForExcel) {
-	config := util.GetConfig()
-	googleApiKey := config.GoogleSheet.GoogleApiKey
-	spreadsheetId := config.GoogleSheet.SheetId
+type GoogleSheetServiceInterface interface {
+	CreateExpiredDomainExcel(domains []postgresql.DomainForExcel)
+}
 
-	sheetsService := createSheetsService(googleApiKey)
-	nextMonthYear := createSheet(sheetsService, spreadsheetId)
-	valueRange, valuesCount := createValueRange(domains)
-	writeRange := fmt.Sprintf("%s!A1:E%d", nextMonthYear, valuesCount)
+type GoogleSheetService struct {
+	Service       *sheets.Service
+	SpreadsheetId string
+}
 
-	_, err := sheetsService.Spreadsheets.Values.Update(spreadsheetId, writeRange, valueRange).
-		ValueInputOption("RAW").Do()
-	if err != nil {
-		log.LogFatal(fmt.Sprintf("Unable to write data to sheet: %v", err))
-	}
+func New(config util.GoogleSheetConfig) (GoogleSheetServiceInterface, error) {
+	sheetsService := createSheetsService(config.GoogleApiKey)
 
-	msg := createMessage(domains)
-	writeMessage(msg, len(domains), nextMonthYear, sheetsService, spreadsheetId)
+	return &GoogleSheetService{
+		Service:       sheetsService,
+		SpreadsheetId: config.SheetId,
+	}, nil
+}
+
+func (gs *GoogleSheetService) CreateExpiredDomainExcel(domains []postgresql.DomainForExcel) {
+	sheetName := time.Now().Format("01/2006") // Format: MM/YYYY
+	createSheet(gs.Service, gs.SpreadsheetId, sheetName)
+	gs.writeData(
+		gs.SpreadsheetId,
+		domains,
+		func() string {
+			return fmt.Sprintf("%s!A1:F%d", sheetName, len(domains)+1)
+		},
+		func(domains []postgresql.DomainForExcel) *sheets.ValueRange {
+			return createValueRangeForDomain(domains)
+		},
+	)
+	fmt.Println("3")
+
+	gs.writeData(
+		gs.SpreadsheetId,
+		domains,
+		func() string {
+			return fmt.Sprintf("%s!A%d:F%d", sheetName, len(domains)+3, len(domains)+3)
+		},
+		func(domains []postgresql.DomainForExcel) *sheets.ValueRange {
+			return createValueRangeForMessage(domains)
+		},
+	)
 
 	fmt.Println("Data successfully written to Google Sheet.")
 }
 
-func writeMessage(composeMessage string, len int, sheet string, sheetsService *sheets.Service, spreadsheetId string) {
-	rangeValue := fmt.Sprintf("%s!A%d:E%d", sheet, len+3, len+3)
+func (gs *GoogleSheetService) writeData(
+	spreadsheetId string,
+	domains []postgresql.DomainForExcel,
+	writeRangeFunc func() string,
+	valueRangeFunc func(domains []postgresql.DomainForExcel) *sheets.ValueRange) error {
 
-	// Prepare the value range with the message.
-	valueRange := &sheets.ValueRange{
-		Values: [][]interface{}{
-			{composeMessage}, // Call the function to compose the message
-		},
-	}
-
-	// Call the Sheets API to update the value in the specified range.
-	_, err := sheetsService.Spreadsheets.Values.Update(spreadsheetId, rangeValue, valueRange).
+	valueRange := valueRangeFunc(domains)
+	writeRange := writeRangeFunc()
+	_, err := gs.Service.Spreadsheets.Values.Update(spreadsheetId, writeRange, valueRange).
 		ValueInputOption("RAW").Do()
 	if err != nil {
 		log.LogFatal(fmt.Sprintf("Unable to update cell value: %v", err))
+		return err
+	}
+	return nil
+}
+
+func createValueRangeForDomain(domains []postgresql.DomainForExcel) *sheets.ValueRange {
+	values := [][]interface{}{
+		{"平台", "代理", "網域", "建立日期", "到期日", "續約價格"},
+	}
+
+	for _, domain := range domains {
+		row := []interface{}{
+			domain.Brand,
+			domain.Agent,
+			domain.Domain,
+			domain.Created,
+			domain.Expires,
+			"16.06",
+		}
+		values = append(values, row)
+	}
+
+	return &sheets.ValueRange{
+		Values: values,
 	}
 }
-func createMessage(domains []postgresql.DomainForExcel) string {
+
+func createValueRangeForMessage(domains []postgresql.DomainForExcel) *sheets.ValueRange {
 	expirationDate := getResponseDate() + "(五)"
 
 	domainNames := mapStrings(domains, func(domain postgresql.DomainForExcel) string {
@@ -89,7 +136,12 @@ func createMessage(domains []postgresql.DomainForExcel) string {
 		log.LogFatal(fmt.Sprintf("Error executing template: %v", err))
 	}
 
-	return buf.String()
+	valueRange := &sheets.ValueRange{
+		Values: [][]interface{}{
+			{buf.String()}, // Call the function to compose the message
+		},
+	}
+	return valueRange
 }
 
 func mapStrings(domains []postgresql.DomainForExcel, f func(postgresql.DomainForExcel) string) []string {
@@ -103,12 +155,16 @@ func mapStrings(domains []postgresql.DomainForExcel, f func(postgresql.DomainFor
 func createSheetsService(key string) *sheets.Service {
 	creds, err := ioutil.ReadFile(key)
 	if err != nil {
-		log.LogFatal(fmt.Sprintf("Unable to read client secret file: %v", err))
+		message := fmt.Sprintf("Unable to read client secret file: %v", err)
+		log.LogFatal(message)
+		fmt.Println(message)
 	}
 
 	conf, err := google.JWTConfigFromJSON(creds, sheets.SpreadsheetsScope)
 	if err != nil {
-		log.LogFatal(fmt.Sprintf("Unable to parse client secret file to config: %v", err))
+		message := fmt.Sprintf("Unable to parse client secret file to config: %v", err)
+		log.LogFatal(message)
+		fmt.Println(message)
 	}
 
 	jwtConf := &jwt.Config{
@@ -127,16 +183,13 @@ func createSheetsService(key string) *sheets.Service {
 	return sheetsService
 }
 
-func createSheet(sheetsService *sheets.Service, spreadsheetId string) string {
-	nextMonth := time.Now().AddDate(0, 1, 0)
-	nextMonthYear := nextMonth.Format("01/2006") // Format: MM/YYYY
-
-	if checkIfSheetExists(sheetsService, spreadsheetId, nextMonthYear) {
-		return nextMonthYear
+func createSheet(sheetsService *sheets.Service, spreadsheetId string, sheetName string) {
+	if checkIfSheetExists(sheetsService, spreadsheetId, sheetName) {
+		return
 	}
 
 	newSheetProperties := &sheets.SheetProperties{
-		Title: nextMonthYear,
+		Title: sheetName,
 	}
 
 	batchUpdateRequest := &sheets.BatchUpdateSpreadsheetRequest{
@@ -154,8 +207,7 @@ func createSheet(sheetsService *sheets.Service, spreadsheetId string) string {
 		log.LogFatal(fmt.Sprintf("Unable to create new sheet: %v", err))
 	}
 
-	fmt.Printf("New sheet '%s' created successfully.\n", nextMonthYear)
-	return nextMonthYear
+	fmt.Printf("New sheet '%s' created successfully.\n", sheetName)
 }
 
 func checkIfSheetExists(sheetsService *sheets.Service, spreadsheetId string, sheetName string) bool {
@@ -170,27 +222,6 @@ func checkIfSheetExists(sheetsService *sheets.Service, spreadsheetId string, she
 		}
 	}
 	return false
-}
-
-func createValueRange(domains []postgresql.DomainForExcel) (*sheets.ValueRange, int) {
-	values := [][]interface{}{
-		{"Brand", "Agent", "Domain", "Created", "Expired"},
-	}
-
-	for _, domain := range domains {
-		row := []interface{}{
-			domain.Brand,
-			domain.Agent,
-			domain.Domain,
-			domain.Created,
-			domain.Expires,
-		}
-		values = append(values, row)
-	}
-
-	return &sheets.ValueRange{
-		Values: values,
-	}, len(values)
 }
 
 func getLastFridayOfMonth(now time.Time) time.Time {

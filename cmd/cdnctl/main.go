@@ -3,7 +3,6 @@ package main
 import (
 	"cdnetwork/internal/log"
 	"cdnetwork/pkg/cli"
-	"cdnetwork/pkg/google_sheet"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -15,7 +14,7 @@ func main() {
 	// domainsForExcel := postgresql.GetAgents(domains)
 	// fmt.Println("domain's length:", len(domainsForExcel))
 
-	google_sheet.CreateExpiredDomainExcel(nil)
+	//googlesheet.CreateExpiredDomainExcel(nil)
 
 	//cloudflare.GetDnsInfo("autotest1.rpgp.cc")
 

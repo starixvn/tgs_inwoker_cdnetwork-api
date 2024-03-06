@@ -18,12 +18,12 @@ type CreateCDNCertServicer interface {
 type CreateCDNCertService struct {
 	wd     selenium.WebDriver
 	svc    *selenium.Service
-	config util.CdnConfig
+	config util.TgsConfig
 }
 
 func CreateCertificateByDomain(domain string) {
 	config := util.GetConfig()
-	cdnService, err := NewCreateCDNCertService(config.Cdnetwork)
+	cdnService, err := NewCreateCDNCertService(config)
 	if err != nil {
 		fmt.Printf("Failed to initialize CDN service: %v\n", err)
 		return
@@ -32,7 +32,7 @@ func CreateCertificateByDomain(domain string) {
 	fmt.Printf("Failed to create certificate in CDN: %v\n", err)
 }
 
-func NewCreateCDNCertService(config util.CdnConfig) (*CreateCDNCertService, error) {
+func NewCreateCDNCertService(config util.TgsConfig) (*CreateCDNCertService, error) {
 	selenium.SetDebug(false)
 	service, err := selenium.NewChromeDriverService(config.ChromeDriverPath, 4444)
 	if err != nil {
@@ -56,7 +56,7 @@ func NewCreateCDNCertService(config util.CdnConfig) (*CreateCDNCertService, erro
 }
 
 func (cm *CreateCDNCertService) CreateCertificate(domain string) error {
-	// defer cm.svc.Stop() // Make sure to stop service when main function exits
+	// defer cm.svc.Stop()
 	// defer cm.wd.Quit()
 
 	if err := cm.login(); err != nil {
@@ -70,15 +70,15 @@ func (cm *CreateCDNCertService) CreateCertificate(domain string) error {
 }
 
 func (cm *CreateCDNCertService) login() error {
-	if err := goToURL(cm.wd, cm.config.CdnLoginUrl); err != nil {
+	if err := goToURL(cm.wd, cm.config.Cdnetwork.CdnLoginUrl); err != nil {
 		return err
 	}
 
-	if err := sendKeysToElement(cm.wd, selenium.ByID, "js-accountinput", cm.config.CdnUserName); err != nil {
+	if err := sendKeysToElement(cm.wd, selenium.ByID, "js-accountinput", cm.config.Cdnetwork.CdnUserName); err != nil {
 		return err
 	}
 
-	if err := sendKeysToElement(cm.wd, selenium.ByID, "js-pwdinput", cm.config.CdnPassword); err != nil {
+	if err := sendKeysToElement(cm.wd, selenium.ByID, "js-pwdinput", cm.config.Cdnetwork.CdnPassword); err != nil {
 		return err
 	}
 
@@ -91,7 +91,7 @@ func (cm *CreateCDNCertService) login() error {
 }
 
 func (cm *CreateCDNCertService) createCertificate(domain string) error {
-	if err := goToURL(cm.wd, cm.config.CdnCertificateCreationUrl); err != nil {
+	if err := goToURL(cm.wd, cm.config.Cdnetwork.CdnCertificateCreationUrl); err != nil {
 		return err
 	}
 

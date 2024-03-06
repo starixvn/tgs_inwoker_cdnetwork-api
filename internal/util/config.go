@@ -9,12 +9,13 @@ import (
 )
 
 type TgsConfig struct {
-	CloudflareToken string            `yaml:"cloudflare_token"`
-	GoogleSheet     GoogleSheetConfig `yaml:"google_sheet"`
-	Cdnetwork       CdnConfig         `yaml:"cdnetwork"`
-	Namecheap       NamecheapConfig   `yaml:"namecheap"`
-	Postgresql      PostgresqlConfig  `yaml:"postgresql"`
-	Telegram        TelegramConfig    `yaml:"telegram"`
+	CloudflareToken  string            `yaml:"cloudflare_token"`
+	ChromeDriverPath string            `yaml:"chrome_driver_path"`
+	GoogleSheet      GoogleSheetConfig `yaml:"google_sheet"`
+	Cdnetwork        CdnConfig         `yaml:"cdnetwork"`
+	Namecheap        NamecheapConfig   `yaml:"namecheap"`
+	Postgresql       PostgresqlConfig  `yaml:"postgresql"`
+	Telegram         TelegramConfig    `yaml:"telegram"`
 }
 
 type GoogleSheetConfig struct {
@@ -30,12 +31,12 @@ type CdnConfig struct {
 	CdnCertificateCreationUrl string `yaml:"cdn_certificate_creation_url"`
 	CdnPassword               string `yaml:"cdn_password"`
 	DnsContent                string `yaml:"dns_content"`
-	ChromeDriverPath          string `yaml:"chrome_driver_path"`
 }
 
 type NamecheapConfig struct {
 	NamecheapApiKey   string `yaml:"namecheap_api_key"`
 	NamecheapUsername string `yaml:"namecheap_username"`
+	NamecheapPassword string `yaml:"namecheap_password"`
 	NamecheapClientIp string `yaml:"namecheap_client_ip"`
 }
 

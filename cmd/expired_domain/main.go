@@ -1,13 +1,33 @@
 package main
 
 import (
-	"cdnetwork/pkg/google_sheet"
+	"cdnetwork/internal/util"
+	"cdnetwork/pkg/googlesheet"
 	"cdnetwork/pkg/namecheap"
 	"cdnetwork/pkg/postgresql"
+	"fmt"
 )
 
 func main() {
-	domains := namecheap.GetExpiredDomains()
-	domainsForExcel := postgresql.GetAgents(domains)
-	google_sheet.CreateExpiredDomainExcel(domainsForExcel)
+	config := util.GetConfig()
+	namecheapClient := namecheap.New(config.Namecheap)
+
+	domains, err := namecheapClient.GetExpiredDomains()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	postgresqlClient := postgresql.New(config.Postgresql)
+	domainsForExcel, err := postgresqlClient.GetAgentDomains(domains)
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	googleSheetSvc, err := googlesheet.New(config.GoogleSheet)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	googleSheetSvc.CreateExpiredDomainExcel(domainsForExcel)
 }
