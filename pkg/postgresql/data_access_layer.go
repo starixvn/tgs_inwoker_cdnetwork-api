@@ -19,9 +19,7 @@ func NewDataAccessLayer(config util.PostgresqlConfig) (*sql.DB, error) {
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		messgae := fmt.Sprintf("Failed to connect to database: %v", err)
-		log.LogFatal(messgae)
-		fmt.Println(messgae)
+		log.LogFatal(fmt.Sprintf("Failed to connect to database: %v", err))
 		panic(err)
 	}
 

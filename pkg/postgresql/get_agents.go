@@ -29,6 +29,7 @@ type GetAgentService struct {
 
 func New(config util.PostgresqlConfig) GetAgentServiceInterface {
 	db, err := NewDataAccessLayer(config)
+	defer db.Close()
 
 	if err != nil {
 		panic(err)
@@ -41,6 +42,8 @@ func New(config util.PostgresqlConfig) GetAgentServiceInterface {
 
 func (s *GetAgentService) GetAgentDomains(domains []namecheap.FilteredDomain) ([]DomainForExcel, error) {
 
+	createTempTable(s.Db, domains)
+	defer deleteTempTable(s.Db)
 	query := `
 	SELECT b.code, a.username, td.name, td.created, td.expires
 	FROM dbo.agents a
@@ -53,7 +56,7 @@ func (s *GetAgentService) GetAgentDomains(domains []namecheap.FilteredDomain) ([
 	fmt.Println("start query")
 
 	if err != nil {
-		//panic(err)
+		log.LogError(err.Error())
 		return nil, err
 	}
 	defer rows.Close()
