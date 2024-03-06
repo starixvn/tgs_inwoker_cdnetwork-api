@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
+	"strconv"
 	"time"
 
 	"golang.org/x/oauth2/google"
@@ -97,8 +98,22 @@ func createValueRangeForDomain(domains []postgresql.DomainForExcel) *sheets.Valu
 		values = append(values, row)
 	}
 
+	numRows := len(values)
+	numCols := len(values[0])
+	for i := 0; i < numRows; i++ {
+		for j := 0; j < numCols; j++ {
+			values[i][j] = &sheets.CellData{
+				UserEnteredFormat: &sheets.CellFormat{
+					HorizontalAlignment: "CENTER",
+				},
+			}
+		}
+	}
+
 	return &sheets.ValueRange{
-		Values: values,
+		Values:         values,
+		MajorDimension: "ROWS",
+		Range:          "A1:F" + strconv.Itoa(len(values)),
 	}
 }
 
