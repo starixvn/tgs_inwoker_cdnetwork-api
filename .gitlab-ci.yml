@@ -4,3 +4,5 @@ clear:
   stage: clear
   script: 
     - df -h
+  tags:
+    - local-build
